@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:#070c18;font-family:'IBM Plex Sans Thai','IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#e8eefb}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:rgba(124,148,184,.22);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(124,148,184,.4);background-clip:padding-box}
+  input,textarea,select,button{font-family:inherit}
+  input::placeholder,textarea::placeholder{color:#5a6c88}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes gridMove{from{background-position:0 0}to{background-position:48px 48px}}
+  .swal2-popup{font-family:'IBM Plex Sans Thai',sans-serif!important;border-radius:16px!important}
+  .scrollarea{overflow-y:auto}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(1200px 700px at 80% -10%,rgba(52,227,164,.07),transparent 60%),radial-gradient(900px 600px at 0% 100%,rgba(91,155,245,.06),transparent 55%),#070c18">
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr">
+    <!-- Brand side -->
+    <div style="position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:56px 60px;background:linear-gradient(155deg,#0b1830 0%,#0a1424 55%,#070f1f 100%);border-right:1px solid rgba(124,148,184,.12)">
+      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(124,148,184,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(124,148,184,.06) 1px,transparent 1px);background-size:48px 48px;animation:gridMove 6s linear infinite;opacity:.6"></div>
+      <div style="position:relative;display:flex;align-items:center;gap:14px">
+        <img src="assets/raman-logo.png" alt="Raman Hospital" style="height:54px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))">
+        <div style="line-height:1.25">
+          <div style="font-weight:700;font-size:16px;letter-spacing:.2px">โรงพยาบาลรามัน</div>
+          <div style="font-size:12px;color:#7ce0c0;font-weight:500" class="mono">CYBER SECURITY TEAM</div>
+        </div>
+      </div>
+
+      <div style="position:relative;max-width:460px">
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(52,227,164,.3);background:rgba(52,227,164,.08);border-radius:999px;font-size:12px;color:#34e3a4;font-weight:600;margin-bottom:22px" class="mono">
+          <span style="width:7px;height:7px;border-radius:50%;background:#34e3a4;animation:pulseDot 1.6s ease-in-out infinite"></span>BCP / DRP DRILL SYSTEM
+        </div>
+        <h1 style="font-size:40px;line-height:1.18;margin:0 0 18px;font-weight:700;letter-spacing:-.5px">ระบบรายงานผล<br>การซ้อมแผน<span style="color:#34e3a4"> BCP &amp; DRP</span></h1>
+        <p style="font-size:15px;line-height:1.7;color:#93a4c4;margin:0">บันทึกและติดตามผลการซ้อมแผนดำเนินธุรกิจต่อเนื่อง (Business Continuity Plan) และแผนกู้คืนจากภัยพิบัติ (Disaster Recovery Plan) กรณีระบบสารสนเทศล่ม</p>
+        <div style="display:flex;gap:26px;margin-top:34px">
+          <div><div style="font-size:26px;font-weight:700;color:#fff" class="mono">5</div><div style="font-size:12px;color:#7e90ad">ด้านของปัญหา</div></div>
+          <div style="width:1px;background:rgba(124,148,184,.18)"></div>
+          <div><div style="font-size:26px;font-weight:700;color:#fff" class="mono">24</div><div style="font-size:12px;color:#7e90ad">หน่วยงาน</div></div>
+          <div style="width:1px;background:rgba(124,148,184,.18)"></div>
+          <div><div style="font-size:26px;font-weight:700;color:#fff" class="mono">3</div><div style="font-size:12px;color:#7e90ad">ระดับสิทธิ์ผู้ใช้</div></div>
+        </div>
+      </div>
+
+      <div style="position:relative;font-size:12px;color:#5f718e" class="mono">RAMAN HOSPITAL · IT SECURITY GOVERNANCE</div>
+    </div>
+
+    <!-- Form side -->
+    <div style="display:flex;align-items:center;justify-content:center;padding:40px">
+      <div style="width:100%;max-width:400px;opacity:1">
+        <div style="margin-bottom:28px">
+          <h2 style="font-size:24px;font-weight:700;margin:0 0 6px">เข้าสู่ระบบ</h2>
+          <p style="font-size:14px;color:#93a4c4;margin:0">Sign in · กรอกบัญชีผู้ใช้เพื่อเข้าใช้งาน</p>
+        </div>
+        <form onSubmit="{{ onLogin }}">
+          <label style="display:block;font-size:13px;font-weight:500;color:#aebbd4;margin-bottom:7px">ชื่อผู้ใช้ <span class="mono" style="color:#64758f">/ Username</span></label>
+          <div style="position:relative;margin-bottom:18px">
+            <input name="username" autocomplete="username" placeholder="กรอกชื่อผู้ใช้" style="width:100%;padding:13px 14px;background:#0d1730;border:1px solid rgba(124,148,184,.2);border-radius:11px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4;box-shadow:0 0 0 3px rgba(52,227,164,.13)">
+          </div>
+          <label style="display:block;font-size:13px;font-weight:500;color:#aebbd4;margin-bottom:7px">รหัสผ่าน <span class="mono" style="color:#64758f">/ Password</span></label>
+          <div style="position:relative;margin-bottom:14px">
+            <input name="password" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่าน" style="width:100%;padding:13px 14px;background:#0d1730;border:1px solid rgba(124,148,184,.2);border-radius:11px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4;box-shadow:0 0 0 3px rgba(52,227,164,.13)">
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#93a4c4;cursor:pointer"><input type="checkbox" style="accent-color:#34e3a4;width:15px;height:15px">จดจำการเข้าสู่ระบบ</label>
+            <a href="#" onClick="{{ onForgot }}" style="font-size:13px;color:#34e3a4;text-decoration:none">ลืมรหัสผ่าน?</a>
+          </div>
+          <button type="submit" style="width:100%;padding:14px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(52,227,164,.22)" style-hover="filter:brightness(1.06)">เข้าสู่ระบบ</button>
+        </form>
+
+        <div style="display:flex;align-items:center;gap:12px;margin:22px 0;color:#5f718e;font-size:12px"><div style="flex:1;height:1px;background:rgba(124,148,184,.16)"></div>เข้าใช้งานด่วน (เดโม)<div style="flex:1;height:1px;background:rgba(124,148,184,.16)"></div></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <button onClick="{{ onQuickReporter }}" style="padding:10px 6px;background:#101b34;border:1px solid rgba(124,148,184,.18);border-radius:10px;color:#cdd8ee;font-size:12px;font-weight:500;cursor:pointer" style-hover="border-color:#34e3a4;color:#fff">ผู้รายงาน</button>
+          <button onClick="{{ onQuickLead }}" style="padding:10px 6px;background:#101b34;border:1px solid rgba(124,148,184,.18);border-radius:10px;color:#cdd8ee;font-size:12px;font-weight:500;cursor:pointer" style-hover="border-color:#34e3a4;color:#fff">หัวหน้าทีม</button>
+          <button onClick="{{ onQuickAdmin }}" style="padding:10px 6px;background:#101b34;border:1px solid rgba(124,148,184,.18);border-radius:10px;color:#cdd8ee;font-size:12px;font-weight:500;cursor:pointer" style-hover="border-color:#34e3a4;color:#fff">แอดมิน</button>
+        </div>
+
+        <p style="text-align:center;font-size:13px;color:#93a4c4;margin:24px 0 0">ยังไม่มีบัญชี? <a href="#" onClick="{{ onGoRegister }}" style="color:#34e3a4;font-weight:600;text-decoration:none">ลงทะเบียนผู้ใช้งานใหม่</a></p>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isRegister }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:48px 24px">
+    <div style="width:100%;max-width:680px;opacity:1">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <img src="assets/raman-logo.png" style="height:40px">
+        <div style="font-weight:700;font-size:15px">โรงพยาบาลรามัน <span class="mono" style="color:#7ce0c0;font-size:12px;font-weight:500">· CYBER SECURITY</span></div>
+      </div>
+      <h2 style="font-size:26px;font-weight:700;margin:18px 0 4px">ลงทะเบียนผู้ใช้งานใหม่</h2>
+      <p style="font-size:14px;color:#93a4c4;margin:0 0 26px">User Registration · กรอกข้อมูลให้ครบถ้วนเพื่อสร้างบัญชีผู้ใช้งานในระบบ</p>
+
+      <form onSubmit="{{ onRegister }}" style="background:#0f1a32;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:28px">
+        <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:16px" class="mono">ข้อมูลส่วนตัว · PERSONAL</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="grid-column:span 2">
+            <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ชื่อ - นามสกุล <span style="color:#f87171">*</span></label>
+            <input name="fullname" placeholder="เช่น นายสมชาย ใจดี" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4">
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">เบอร์โทรศัพท์ <span style="color:#f87171">*</span></label>
+            <input name="phone" inputmode="tel" placeholder="08X-XXX-XXXX" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4">
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">อีเมล <span style="color:#f87171">*</span></label>
+            <input name="email" type="email" placeholder="name@ramanhosp.go.th" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4">
+          </div>
+        </div>
+
+        <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin:24px 0 16px" class="mono">สังกัด &amp; ตำแหน่ง · ORGANIZATION</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="grid-column:span 2">
+            <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">หน่วยงาน / สังกัด <span style="color:#f87171">*</span></label>
+            <select name="unit" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4">
+              <option value="">— เลือกหน่วยงาน —</option>
+              <option>ศูนย์เทคโนโลยีสารสนเทศ</option>
+              <option>ห้องฉุกเฉิน (ER)</option>
+              <option>งานเวชระเบียน</option>
+              <option>กลุ่มงานเภสัชกรรม</option>
+              <option>ห้องปฏิบัติการ (LAB)</option>
+              <option>งานรังสีวิทยา (X-ray)</option>
+              <option>ผู้ป่วยนอก (OPD)</option>
+              <option>งานการเงินและบัญชี</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ตำแหน่งด้านวิชาชีพ <span style="color:#f87171">*</span></label>
+            <select name="prof" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4">
+              <option value="">— เลือก —</option>
+              <option>นายแพทย์ / แพทย์</option>
+              <option>พยาบาลวิชาชีพ</option>
+              <option>เภสัชกร</option>
+              <option>นักเทคนิคการแพทย์</option>
+              <option>นักวิชาการคอมพิวเตอร์</option>
+              <option>เจ้าพนักงานธุรการ</option>
+              <option>อื่นๆ</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ตำแหน่งด้านทีมนำ</label>
+            <select name="team" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4">
+              <option value="">— เลือก (ถ้ามี) —</option>
+              <option>หัวหน้าทีม BCP</option>
+              <option>ทีมนำด้านบริการ</option>
+              <option>ทีมนำด้านระบบสารสนเทศ</option>
+              <option>ทีมนำด้านยา</option>
+              <option>สมาชิกทีม / ผู้ปฏิบัติงาน</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:10px;background:rgba(91,155,245,.08);border:1px solid rgba(91,155,245,.22);border-radius:10px;padding:12px 14px;margin-top:22px">
+          <span style="color:#5b9bf5;font-size:16px;line-height:1.3">ⓘ</span>
+          <p style="margin:0;font-size:12.5px;color:#a9bbd8;line-height:1.6">ระบบจะตรวจสอบ<b style="color:#cfe0ff"> อีเมลและเบอร์โทรซ้ำ</b> โดยอัตโนมัติ หากเคยลงทะเบียนแล้วจะไม่สามารถสมัครซ้ำได้ (Duplicate Prevention)</p>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:24px">
+          <button type="button" onClick="{{ onBackLogin }}" style="flex:0 0 auto;padding:13px 22px;background:transparent;border:1px solid rgba(124,148,184,.25);border-radius:11px;color:#cdd8ee;font-size:14px;font-weight:500;cursor:pointer" style-hover="border-color:#93a4c4">ย้อนกลับ</button>
+          <button type="submit" style="flex:1;padding:13px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer" style-hover="filter:brightness(1.06)">ลงทะเบียน</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;grid-template-columns:264px 1fr;min-height:100vh">
+    <!-- Sidebar -->
+    <aside style="background:#0a1426;border-right:1px solid rgba(124,148,184,.12);display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
+      <div style="padding:22px 20px 18px;border-bottom:1px solid rgba(124,148,184,.1);display:flex;align-items:center;gap:11px">
+        <img src="assets/raman-logo.png" style="height:38px">
+        <div style="line-height:1.25">
+          <div style="font-weight:700;font-size:13.5px">รพ.รามัน</div>
+          <div class="mono" style="font-size:10.5px;color:#7ce0c0;font-weight:500">BCP / DRP SYSTEM</div>
+        </div>
+      </div>
+
+      <nav style="flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:3px;overflow-y:auto" class="scrollarea">
+        <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="4">
+          <a href="#" onClick="{{ item.onClick }}" style="{{ item.style }}">
+            <span style="display:flex;align-items:center;justify-content:center;width:20px;height:20px;flex:0 0 auto">{{ item.icon }}</span>
+            <span style="flex:1">{{ item.label }}</span>
+            <sc-if value="{{ item.badge }}" hint-placeholder-val="{{ true }}"><span style="background:#f87171;color:#3a0d0d;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px" class="mono">{{ item.badge }}</span></sc-if>
+          </a>
+        </sc-for>
+      </nav>
+
+      <div style="padding:14px 12px;border-top:1px solid rgba(124,148,184,.1)">
+        <div style="display:flex;align-items:center;gap:11px;padding:9px 10px;background:#0f1a32;border:1px solid rgba(124,148,184,.12);border-radius:12px">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#34e3a4,#1fb886);display:flex;align-items:center;justify-content:center;color:#062417;font-weight:700;font-size:14px;flex:0 0 auto">{{ userInitial }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ userName }}</div>
+            <div style="font-size:11px;color:#7ce0c0">{{ roleLabel }}</div>
+          </div>
+          <a href="#" onClick="{{ onLogout }}" title="ออกจากระบบ" style="color:#7e90ad;display:flex;padding:4px" style-hover="color:#f87171">{{ logoutIcon }}</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main style="display:flex;flex-direction:column;min-width:0">
+      <!-- Topbar -->
+      <header style="position:sticky;top:0;z-index:5;background:rgba(7,12,24,.82);backdrop-filter:blur(12px);border-bottom:1px solid rgba(124,148,184,.1);padding:16px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px">{{ pageTitle }} <span class="mono" style="font-size:11px;font-weight:500;color:#5f718e">{{ pageTitleEn }}</span></div>
+          <div style="font-size:12.5px;color:#7e90ad;margin-top:2px">{{ pageSub }}</div>
+        </div>
+
+        <sc-if value="{{ showRoleSwitch }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:11.5px;color:#5f718e" class="mono">VIEW AS</span>
+            <div style="display:flex;background:#0e1830;border:1px solid rgba(124,148,184,.16);border-radius:10px;padding:3px;gap:2px">
+              <sc-for list="{{ roleTabs }}" as="rt" hint-placeholder-count="3">
+                <button onClick="{{ rt.onClick }}" style="{{ rt.style }}">{{ rt.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <button onClick="{{ onNewReport }}" style="display:flex;align-items:center;gap:7px;padding:10px 16px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(52,227,164,.2)" style-hover="filter:brightness(1.06)">+ บันทึกผลการซ้อม</button>
+      </header>
+
+      <div class="scrollarea" style="flex:1;padding:28px;overflow-y:auto">
+
+        <!-- DASHBOARD -->
+        <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+          <div style="opacity:1">
+            <!-- variant switcher -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#93a4c4">
+                <span class="mono" style="color:#5f718e">LAYOUT</span>
+                <div style="display:flex;background:#0e1830;border:1px solid rgba(124,148,184,.16);border-radius:10px;padding:3px;gap:2px">
+                  <sc-for list="{{ variantTabs }}" as="vt" hint-placeholder-count="3">
+                    <button onClick="{{ vt.onClick }}" style="{{ vt.style }}">{{ vt.label }}</button>
+                  </sc-for>
+                </div>
+                <span style="font-size:12.5px;color:#64758f">{{ variantDesc }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#7e90ad"><span style="width:7px;height:7px;border-radius:50%;background:#34e3a4;animation:pulseDot 1.6s infinite"></span>ข้อมูล ณ มิ.ย. 2568</div>
+            </div>
+
+            <!-- KPI row (shared, hidden in variant C top) -->
+            <sc-if value="{{ showKpiRow }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px">
+                <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                  <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:14px;padding:18px 18px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;right:-10px;top:-10px;width:64px;height:64px;border-radius:50%;background:{{ k.glow }};filter:blur(8px)"></div>
+                    <div style="display:flex;align-items:center;gap:9px;position:relative">
+                      <span style="width:32px;height:32px;border-radius:9px;background:{{ k.iconBg }};display:flex;align-items:center;justify-content:center;color:{{ k.color }}">{{ k.icon }}</span>
+                      <sc-if value="{{ k.trend }}" hint-placeholder-val="{{ true }}"><span style="{{ k.trendStyle }}">{{ k.trend }}</span></sc-if>
+                    </div>
+                    <div style="font-size:30px;font-weight:700;margin-top:12px;line-height:1" class="mono">{{ k.value }}<span style="font-size:14px;color:#7e90ad;font-weight:500"> {{ k.unit }}</span></div>
+                    <div style="font-size:13px;color:#aebbd4;margin-top:6px">{{ k.label }}</div>
+                    <div style="font-size:11px;color:#5f718e" class="mono">{{ k.en }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- Variant A: 2x2 grid -->
+            <sc-if value="{{ isVarA }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-bottom:18px">
+                <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:20px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div><div style="font-size:15px;font-weight:600">หน่วยงานที่ส่งรายงาน</div><div style="font-size:11.5px;color:#5f718e" class="mono">UNITS REPORTING OVER TIME</div></div></div>
+                  {{ lineChart }}
+                </div>
+                <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:20px;display:flex;flex-direction:column">
+                  <div style="font-size:15px;font-weight:600">สัดส่วนปัญหา 5 ด้าน</div>
+                  <div style="font-size:11.5px;color:#5f718e;margin-bottom:6px" class="mono">ISSUE DISTRIBUTION</div>
+                  {{ donutBlock }}
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+                <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:20px">
+                  <div style="font-size:15px;font-weight:600">จำนวนปัญหาแยกตามด้าน</div>
+                  <div style="font-size:11.5px;color:#5f718e;margin-bottom:6px" class="mono">ISSUES BY CATEGORY</div>
+                  {{ barChart }}
+                </div>
+                {{ recentTable }}
+              </div>
+            </sc-if>
+
+            <!-- Variant B: command center -->
+            <sc-if value="{{ isVarB }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:1fr 320px;gap:18px;margin-bottom:18px">
+                <div style="background:linear-gradient(160deg,#0e1c38,#101b34);border:1px solid rgba(52,227,164,.18);border-radius:16px;padding:22px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div><div style="font-size:16px;font-weight:700">แนวโน้มการส่งรายงาน — ภาพรวมระบบ</div><div style="font-size:11.5px;color:#5f718e" class="mono">SUBMISSION TREND · LIVE</div></div><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#34e3a4" class="mono"><span style="width:7px;height:7px;border-radius:50%;background:#34e3a4;animation:pulseDot 1.4s infinite"></span>MONITORING</span></div>
+                  {{ lineChart }}
+                </div>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <sc-for list="{{ aspects }}" as="a" hint-placeholder-count="5">
+                    <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+                      <span style="width:9px;height:9px;border-radius:50%;background:{{ a.color }};flex:0 0 auto;box-shadow:0 0 8px {{ a.color }}"></span>
+                      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.th }}</div><div style="height:5px;background:#0a1428;border-radius:3px;margin-top:5px;overflow:hidden"><div style="height:100%;width:{{ a.pct }};background:{{ a.color }};border-radius:3px"></div></div></div>
+                      <div style="font-size:17px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:{{ a.color }}">{{ a.count }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:18px">
+                <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:20px;display:flex;flex-direction:column"><div style="font-size:15px;font-weight:600">สัดส่วนปัญหา</div><div style="font-size:11.5px;color:#5f718e;margin-bottom:6px" class="mono">DISTRIBUTION</div>{{ donutBlock }}</div>
+                {{ recentTable }}
+              </div>
+            </sc-if>
+
+            <!-- Variant C: focused storytelling -->
+            <sc-if value="{{ isVarC }}" hint-placeholder-val="{{ true }}">
+              <div style="max-width:920px;margin:0 auto">
+                <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+                  <div style="font-size:16px;font-weight:700;margin-bottom:2px">หน่วยงานที่ส่งรายงานการซ้อม</div>
+                  <div style="font-size:12.5px;color:#7e90ad;margin-bottom:14px">ติดตามจำนวนหน่วยงานที่รายงานผลในแต่ละเดือน เทียบเป้าหมาย 24 หน่วยงาน</div>
+                  {{ lineChart }}
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+                  <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:22px"><div style="font-size:15px;font-weight:600">จำนวนปัญหาแยกด้าน</div><div style="font-size:11.5px;color:#5f718e;margin-bottom:6px" class="mono">BY CATEGORY</div>{{ barChart }}</div>
+                  <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:22px;display:flex;flex-direction:column"><div style="font-size:15px;font-weight:600">สัดส่วน</div><div style="font-size:11.5px;color:#5f718e;margin-bottom:6px" class="mono">SHARE</div>{{ donutBlock }}</div>
+                </div>
+                {{ recentTable }}
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- REPORT FORM -->
+        <sc-if value="{{ isReport }}" hint-placeholder-val="{{ true }}">
+          <div style="max-width:860px;opacity:1">
+            <form ref="{{ formRef }}" onSubmit="{{ onSubmitReport }}">
+              <!-- session info -->
+              <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+                <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:16px" class="mono">① ข้อมูลการซ้อมแผน · SESSION</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                  <div><label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">วัน/เดือน/ปี ที่ซ้อม <span style="color:#f87171">*</span></label><input name="date" type="date" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none;color-scheme:dark" style-focus="border-color:#34e3a4"></div>
+                  <div><label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ช่วงเวลาที่ซ้อม <span style="color:#f87171">*</span></label><div style="display:flex;align-items:center;gap:8px"><input name="timeStart" type="time" style="flex:1;padding:12px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none;color-scheme:dark" style-focus="border-color:#34e3a4"><span style="color:#5f718e">ถึง</span><input name="timeEnd" type="time" style="flex:1;padding:12px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none;color-scheme:dark" style-focus="border-color:#34e3a4"></div></div>
+                  <div style="grid-column:span 2"><label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">หน่วยงาน <span style="color:#f87171">*</span></label><select name="unit" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none" style-focus="border-color:#34e3a4"><option value="">— เลือกหน่วยงาน —</option><option>ศูนย์เทคโนโลยีสารสนเทศ</option><option>ห้องฉุกเฉิน (ER)</option><option>งานเวชระเบียน</option><option>กลุ่มงานเภสัชกรรม</option><option>ห้องปฏิบัติการ (LAB)</option><option>งานรังสีวิทยา (X-ray)</option><option>ผู้ป่วยนอก (OPD)</option><option>งานการเงินและบัญชี</option></select></div>
+                </div>
+              </div>
+
+              <!-- participants -->
+              <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                  <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px" class="mono">② ผู้เข้าร่วมซ้อม · PARTICIPANTS</div>
+                  <button type="button" onClick="{{ onAddParticipant }}" style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:rgba(52,227,164,.1);border:1px solid rgba(52,227,164,.3);border-radius:9px;color:#34e3a4;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(52,227,164,.18)">+ เพิ่มผู้เข้าร่วม</button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <sc-for list="{{ participants }}" as="p" hint-placeholder-count="2">
+                    <div style="display:grid;grid-template-columns:1.1fr 1fr 1.3fr auto;gap:10px;align-items:start">
+                      <input name="p_name" placeholder="ชื่อ - สกุล" style="padding:11px 13px;background:#0a1428;border:1px solid rgba(124,148,184,.18);border-radius:9px;color:#e8eefb;font-size:13.5px;outline:none" style-focus="border-color:#34e3a4">
+                      <input name="p_pos" placeholder="ตำแหน่ง" style="padding:11px 13px;background:#0a1428;border:1px solid rgba(124,148,184,.18);border-radius:9px;color:#e8eefb;font-size:13.5px;outline:none" style-focus="border-color:#34e3a4">
+                      <input name="p_duty" placeholder="หน้าที่/ความรับผิดชอบในการซ้อม" style="padding:11px 13px;background:#0a1428;border:1px solid rgba(124,148,184,.18);border-radius:9px;color:#e8eefb;font-size:13.5px;outline:none" style-focus="border-color:#34e3a4">
+                      <button type="button" onClick="{{ p.remove }}" title="ลบ" style="width:42px;height:42px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:9px;color:#f87171;font-size:18px;cursor:pointer;flex:0 0 auto" style-hover="background:rgba(248,113,113,.2)">×</button>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <!-- issues 5 aspects -->
+              <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+                <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:6px" class="mono">③ สรุปปัญหาและข้อเสนอแนะ · FINDINGS</div>
+                <p style="font-size:12.5px;color:#7e90ad;margin:0 0 18px">ระบุปัญหาที่พบและข้อเสนอแนะแยกตามด้าน โดยพิมพ์เป็นข้อๆ (กด Enter ขึ้นบรรทัดใหม่ = 1 ข้อ)</p>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <sc-for list="{{ aspects }}" as="a" hint-placeholder-count="5">
+                    <div>
+                      <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px"><span style="width:10px;height:10px;border-radius:3px;background:{{ a.color }}"></span><span style="font-size:14px;font-weight:600">{{ a.th }}</span><span class="mono" style="font-size:11px;color:#5f718e">{{ a.en }}</span></div>
+                      <textarea name="aspect" rows="2" placeholder="• พิมพ์ปัญหา/ข้อเสนอแนะ แต่ละข้อขึ้นบรรทัดใหม่..." style="width:100%;padding:11px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.18);border-radius:10px;color:#e8eefb;font-size:13.5px;outline:none;resize:vertical;line-height:1.6;font-family:inherit" style-focus="border-color:#34e3a4"></textarea>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:12px;justify-content:flex-end">
+                <button type="button" onClick="{{ onSaveDraft }}" style="padding:13px 22px;background:transparent;border:1px solid rgba(124,148,184,.25);border-radius:11px;color:#cdd8ee;font-size:14px;font-weight:500;cursor:pointer" style-hover="border-color:#93a4c4">บันทึกร่าง</button>
+                <button type="submit" style="padding:13px 28px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(52,227,164,.2)" style-hover="filter:brightness(1.06)">ส่งรายงานผลการซ้อม</button>
+              </div>
+            </form>
+          </div>
+        </sc-if>
+
+        <!-- REPORTS LIST -->
+        <sc-if value="{{ isReports }}" hint-placeholder-val="{{ true }}">
+          <div style="opacity:1">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
+              <div style="flex:1;min-width:200px;position:relative"><input placeholder="ค้นหาหน่วยงาน / ผู้รายงาน..." style="width:100%;padding:11px 14px 11px 38px;background:#101b34;border:1px solid rgba(124,148,184,.16);border-radius:10px;color:#e8eefb;font-size:13.5px;outline:none" style-focus="border-color:#34e3a4"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#5f718e">⌕</span></div>
+              <select style="padding:11px 14px;background:#101b34;border:1px solid rgba(124,148,184,.16);border-radius:10px;color:#cdd8ee;font-size:13.5px;outline:none"><option>ทุกสถานะ</option><option>อนุมัติแล้ว</option><option>รอตรวจสอบ</option></select>
+              <select style="padding:11px 14px;background:#101b34;border:1px solid rgba(124,148,184,.16);border-radius:10px;color:#cdd8ee;font-size:13.5px;outline:none"><option>มิถุนายน 2568</option><option>พฤษภาคม 2568</option></select>
+            </div>
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;overflow:hidden">
+              <div style="display:grid;grid-template-columns:130px 1.4fr 1.3fr 90px 130px 110px;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(124,148,184,.12);font-size:11.5px;font-weight:600;color:#7e90ad;letter-spacing:.3px" class="mono">วันที่ซ้อม<span>หน่วยงาน</span><span>ผู้รายงาน</span><span>ปัญหา</span><span>สถานะ</span><span>การจัดการ</span></div>
+              <sc-for list="{{ reports }}" as="r" hint-placeholder-count="5">
+                <div style="display:grid;grid-template-columns:130px 1.4fr 1.3fr 90px 130px 110px;gap:12px;padding:15px 20px;border-bottom:1px solid rgba(124,148,184,.07);align-items:center;font-size:13.5px" style-hover="background:rgba(124,148,184,.04)">
+                  <div><div style="font-weight:600">{{ r.date }}</div><div class="mono" style="font-size:11px;color:#5f718e">{{ r.time }}</div></div>
+                  <div style="font-weight:500">{{ r.unit }}</div>
+                  <div style="color:#aebbd4">{{ r.reporter }}</div>
+                  <div><span class="mono" style="font-weight:700;color:#fbbf24">{{ r.issues }}</span> <span style="font-size:11px;color:#5f718e">ข้อ</span></div>
+                  <div><span style="{{ r.statusStyle }}">{{ r.statusLabel }}</span></div>
+                  <div style="display:flex;gap:6px"><button onClick="{{ r.onView }}" style="padding:6px 12px;background:rgba(91,155,245,.12);border:1px solid rgba(91,155,245,.28);border-radius:8px;color:#7fb0ff;font-size:12px;font-weight:500;cursor:pointer" style-hover="background:rgba(91,155,245,.22)">ดู</button></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- REPORT DETAIL -->
+        <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ true }}">
+          <div style="max-width:920px;opacity:1">
+            <button onClick="{{ onBackReports }}" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:transparent;border:1px solid rgba(124,148,184,.2);border-radius:9px;color:#aebbd4;font-size:13px;cursor:pointer;margin-bottom:16px" style-hover="border-color:#93a4c4">← กลับไปรายการรายงาน</button>
+
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+                <div><div style="font-size:20px;font-weight:700">{{ detail.unit }}</div><div style="font-size:12.5px;color:#7e90ad;margin-top:3px">รายงานผลการซ้อมแผน BCP / DRP · กรณีระบบสารสนเทศล่ม</div></div>
+                <span style="{{ detail.statusStyle }}">{{ detail.statusLabel }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px">
+                <div style="background:#0a1428;border:1px solid rgba(124,148,184,.1);border-radius:11px;padding:13px 15px"><div style="font-size:11px;color:#5f718e" class="mono">วันที่ซ้อม</div><div style="font-size:14px;font-weight:600;margin-top:4px">{{ detail.date }}</div></div>
+                <div style="background:#0a1428;border:1px solid rgba(124,148,184,.1);border-radius:11px;padding:13px 15px"><div style="font-size:11px;color:#5f718e" class="mono">ช่วงเวลา</div><div style="font-size:14px;font-weight:600;margin-top:4px">{{ detail.time }}</div></div>
+                <div style="background:#0a1428;border:1px solid rgba(124,148,184,.1);border-radius:11px;padding:13px 15px"><div style="font-size:11px;color:#5f718e" class="mono">ผู้รายงาน</div><div style="font-size:14px;font-weight:600;margin-top:4px">{{ detail.reporter }}</div></div>
+                <div style="background:#0a1428;border:1px solid rgba(124,148,184,.1);border-radius:11px;padding:13px 15px"><div style="font-size:11px;color:#5f718e" class="mono">ปัญหาที่พบ</div><div style="font-size:14px;font-weight:600;margin-top:4px"><span style="color:#fbbf24" class="mono">{{ detail.issues }}</span> ข้อ</div></div>
+              </div>
+            </div>
+
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+              <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:14px" class="mono">ผู้เข้าร่วมซ้อม · PARTICIPANTS</div>
+              <div style="display:grid;grid-template-columns:1.1fr 1fr 1.5fr;gap:12px;padding:0 0 10px;border-bottom:1px solid rgba(124,148,184,.12);font-size:11.5px;font-weight:600;color:#7e90ad" class="mono">ชื่อ - สกุล<span>ตำแหน่ง</span><span>หน้าที่ในการซ้อม</span></div>
+              <sc-for list="{{ detail.participants }}" as="pt" hint-placeholder-count="2">
+                <div style="display:grid;grid-template-columns:1.1fr 1fr 1.5fr;gap:12px;padding:12px 0;border-bottom:1px solid rgba(124,148,184,.06);font-size:13.5px;align-items:center">
+                  <div style="font-weight:600">{{ pt.name }}</div><div style="color:#aebbd4">{{ pt.pos }}</div><div style="color:#aebbd4">{{ pt.duty }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+              <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:18px" class="mono">สรุปปัญหาและข้อเสนอแนะ · FINDINGS</div>
+              <div style="display:flex;flex-direction:column;gap:20px">
+                <sc-for list="{{ detail.findings }}" as="fd" hint-placeholder-count="5">
+                  <div>
+                    <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px"><span style="width:11px;height:11px;border-radius:3px;background:{{ fd.color }};flex:0 0 auto"></span><span style="font-size:14.5px;font-weight:600">{{ fd.th }}</span><span class="mono" style="font-size:11px;color:#5f718e">{{ fd.en }}</span></div>
+                    <sc-if value="{{ fd.hasItems }}" hint-placeholder-val="{{ true }}">
+                      <ol style="margin:0;padding-left:24px;display:flex;flex-direction:column;gap:7px">
+                        <sc-for list="{{ fd.items }}" as="it" hint-placeholder-count="2">
+                          <li style="font-size:13.5px;color:#cdd8ee;line-height:1.65;padding-left:4px">{{ it }}</li>
+                        </sc-for>
+                      </ol>
+                    </sc-if>
+                    <sc-if value="{{ fd.noItems }}" hint-placeholder-val="{{ true }}">
+                      <div style="font-size:13px;color:#5f718e;padding-left:20px">— ไม่พบปัญหาในด้านนี้ —</div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ detail.canApprove }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:12px;align-items:center;background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:18px 22px">
+                <div style="flex:1;font-size:13px;color:#93a4c4">การดำเนินการสำหรับ <b style="color:#cfe0ff">หัวหน้าทีม / ผู้ตรวจ</b> — ตรวจสอบและให้ผลการพิจารณา</div>
+                <button onClick="{{ onReject }}" style="padding:11px 20px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:10px;color:#f87171;font-size:13.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(248,113,113,.2)">ส่งกลับแก้ไข</button>
+                <button onClick="{{ onApprove }}" style="padding:11px 22px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(52,227,164,.2)" style-hover="filter:brightness(1.06)">✓ อนุมัติรายงาน</button>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- ADMIN: USERS -->
+        <sc-if value="{{ isAdminUsers }}" hint-placeholder-val="{{ true }}">
+          <div style="opacity:1">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><div style="font-size:13px;color:#93a4c4">ผู้ใช้งานทั้งหมด <b class="mono" style="color:#fff">{{ userCount }}</b> บัญชี</div><button onClick="{{ onAddUser }}" style="padding:10px 16px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">+ เพิ่มผู้ใช้งาน</button></div>
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;overflow:hidden">
+              <div style="display:grid;grid-template-columns:1.4fr 1.3fr 1fr 1fr 110px 90px;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(124,148,184,.12);font-size:11.5px;font-weight:600;color:#7e90ad" class="mono">ชื่อ - สกุล<span>หน่วยงาน</span><span>วิชาชีพ</span><span>ทีมนำ</span><span>สิทธิ์</span><span>สถานะ</span></div>
+              <sc-for list="{{ users }}" as="u" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:1.4fr 1.3fr 1fr 1fr 110px 90px;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(124,148,184,.07);align-items:center;font-size:13px" style-hover="background:rgba(124,148,184,.04)">
+                  <div><div style="font-weight:600">{{ u.name }}</div><div class="mono" style="font-size:11px;color:#5f718e">{{ u.email }}</div></div>
+                  <div style="color:#aebbd4">{{ u.unit }}</div>
+                  <div style="color:#aebbd4;font-size:12.5px">{{ u.prof }}</div>
+                  <div style="color:#aebbd4;font-size:12.5px">{{ u.team }}</div>
+                  <div><span style="{{ u.roleStyle }}">{{ u.role }}</span></div>
+                  <div><span style="{{ u.activeStyle }}">{{ u.activeLabel }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ADMIN: SETTINGS -->
+        <sc-if value="{{ isAdminSettings }}" hint-placeholder-val="{{ true }}">
+          <div style="max-width:720px;opacity:1;display:flex;flex-direction:column;gap:18px">
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px">
+              <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:16px" class="mono">ตั้งค่าทั่วไป · GENERAL</div>
+              <sc-for list="{{ settingsToggles }}" as="s" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(124,148,184,.08)">
+                  <div><div style="font-size:14px;font-weight:500">{{ s.label }}</div><div style="font-size:12px;color:#7e90ad">{{ s.desc }}</div></div>
+                  <button onClick="{{ s.toggle }}" style="{{ s.trackStyle }}"><span style="{{ s.knobStyle }}"></span></button>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px">
+              <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:16px" class="mono">รอบการซ้อมแผน · SCHEDULE</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div><label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ความถี่ในการซ้อม</label><select style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none"><option>ทุกไตรมาส</option><option>ทุก 6 เดือน</option><option>ทุกปี</option></select></div>
+                <div><label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">เตือนล่วงหน้า (วัน)</label><input type="number" value="7" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none"></div>
+              </div>
+              <button onClick="{{ onSaveSettings }}" style="margin-top:18px;padding:12px 22px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">บันทึกการตั้งค่า</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ADMIN: EXPORT -->
+        <sc-if value="{{ isAdminExport }}" hint-placeholder-val="{{ true }}">
+          <div style="max-width:820px;opacity:1">
+            <div style="background:#101b34;border:1px solid rgba(124,148,184,.14);border-radius:16px;padding:24px;margin-bottom:18px">
+              <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:6px" class="mono">ดึงข้อมูลรายงาน · DATA EXPORT</div>
+              <p style="font-size:13px;color:#93a4c4;margin:0 0 20px">เลือกช่วงเวลาและรูปแบบไฟล์ที่ต้องการส่งออกข้อมูลผลการซ้อมแผนทั้งหมด</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px">
+                <div><label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ตั้งแต่วันที่</label><input type="date" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none;color-scheme:dark"></div>
+                <div><label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ถึงวันที่</label><input type="date" style="width:100%;padding:12px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.2);border-radius:10px;color:#e8eefb;font-size:14px;outline:none;color-scheme:dark"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+                <button onClick="{{ onExportExcel }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.18);border-radius:14px;cursor:pointer;color:#e8eefb" style-hover="border-color:#21a366;background:rgba(33,163,102,.08)"><span style="width:46px;height:46px;border-radius:11px;background:rgba(33,163,102,.15);color:#34d27e;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px" class="mono">XLS</span><div style="font-size:14px;font-weight:600">Excel</div><div style="font-size:11px;color:#7e90ad">.xlsx · ตารางข้อมูลดิบ</div></button>
+                <button onClick="{{ onExportWord }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.18);border-radius:14px;cursor:pointer;color:#e8eefb" style-hover="border-color:#2b7cd3;background:rgba(43,124,211,.08)"><span style="width:46px;height:46px;border-radius:11px;background:rgba(43,124,211,.15);color:#5b9bf5;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px" class="mono">DOC</span><div style="font-size:14px;font-weight:600">Word</div><div style="font-size:11px;color:#7e90ad">.docx · รายงานฉบับเต็ม</div></button>
+                <button onClick="{{ onExportPdf }}" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px;background:#0a1428;border:1px solid rgba(124,148,184,.18);border-radius:14px;cursor:pointer;color:#e8eefb" style-hover="border-color:#e0524d;background:rgba(224,82,77,.08)"><span style="width:46px;height:46px;border-radius:11px;background:rgba(224,82,77,.15);color:#f87171;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px" class="mono">PDF</span><div style="font-size:14px;font-weight:600">PDF</div><div style="font-size:11px;color:#7e90ad">.pdf · สำหรับพิมพ์/นำเสนอ</div></button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;background:rgba(52,227,164,.06);border:1px solid rgba(52,227,164,.2);border-radius:12px;padding:14px 16px"><span style="color:#34e3a4">ⓘ</span><p style="margin:0;font-size:12.5px;color:#a9bbd8;line-height:1.6">ข้อมูลดึงจาก <b style="color:#cfe0ff">Google Sheets</b> ผ่าน Google Apps Script — ไฟล์ที่ส่งออกจะรวมข้อมูลทุกหน่วยงาน ผู้เข้าร่วม และสรุปปัญหาทั้ง 5 ด้าน</p></div>
+          </div>
+        </sc-if>
+
+      </div>
+    </main>
+  </div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860},&quot;showRoleSwitcher&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;เดโม&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;dashboard&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;เดโม&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'login',
+    authed: false,
+    role: 'reporter',
+    variant: 'a',
+    currentReport: null,
+    participants: [{ id: 1 }, { id: 2 }],
+    nextPid: 3,
+    settings: { dup: true, email: true, twofa: false, auto: true },
+    users: [
+      { name: 'นพ.สมชาย ใจดี', email: 'somchai@ramanhosp.go.th', phone: '081-234-5678', unit: 'ศูนย์เทคโนโลยีสารสนเทศ', prof: 'นายแพทย์', team: 'หัวหน้าทีม BCP', role: 'แอดมิน', active: true },
+      { name: 'พว.อารยา ทองสุข', email: 'araya@ramanhosp.go.th', phone: '089-111-2222', unit: 'ห้องฉุกเฉิน (ER)', prof: 'พยาบาลวิชาชีพ', team: 'ทีมนำด้านบริการ', role: 'หัวหน้าทีม', active: true },
+      { name: 'ภก.วิชัย พรหมมา', email: 'wichai@ramanhosp.go.th', phone: '086-333-4444', unit: 'กลุ่มงานเภสัชกรรม', prof: 'เภสัชกร', team: 'ทีมนำด้านยา', role: 'ผู้รายงาน', active: true },
+      { name: 'นางสาวพิมพ์ใจ ศรีสุข', email: 'pimjai@ramanhosp.go.th', phone: '085-555-6666', unit: 'งานเวชระเบียน', prof: 'นักวิชาการคอมพิวเตอร์', team: '—', role: 'ผู้รายงาน', active: false }
+    ],
+    reports: [
+      { date: '21 มิ.ย. 2568', time: '09:00–11:30', unit: 'ศูนย์เทคโนโลยีสารสนเทศ', reporter: 'นพ.สมชาย ใจดี', issues: 5, status: 'approved',
+        participants: [
+          { name: 'นพ.สมชาย ใจดี', pos: 'นายแพทย์', duty: 'ผู้บัญชาการเหตุการณ์ (Incident Commander)' },
+          { name: 'นายธนากร รักษ์ไทย', pos: 'นักวิชาการคอมพิวเตอร์', duty: 'กู้คืนระบบและสลับไปยัง DR-Site' },
+          { name: 'น.ส.กมลชนก สุขใจ', pos: 'เจ้าพนักงานธุรการ', duty: 'ประสานงานและบันทึกเหตุการณ์' }
+        ],
+        findings: {
+          dr: ['การสลับไปยัง DR-Site ใช้เวลา 25 นาที เกินเป้าหมายที่ตั้งไว้ 15 นาที', 'พบค่า config ฐานข้อมูลสำรองไม่ตรงกับระบบหลัก'],
+          pr: ['การแจ้งเตือนผู้ใช้งานผ่านกลุ่ม LINE ล่าช้ากว่าแผน'],
+          staff: ['เจ้าหน้าที่เวรดึกยังไม่คุ้นเคยขั้นตอนการ failover'],
+          bcp: ['เอกสาร BCP ฉบับล่าสุดยังไม่ได้แจกจ่ายครบทุกจุดบริการ']
+        } },
+      { date: '18 มิ.ย. 2568', time: '13:30–15:00', unit: 'ห้องฉุกเฉิน (ER)', reporter: 'พว.อารยา ทองสุข', issues: 7, status: 'pending',
+        participants: [
+          { name: 'พว.อารยา ทองสุข', pos: 'พยาบาลวิชาชีพ', duty: 'หัวหน้าทีมประจำจุด ER' },
+          { name: 'นายสุรชัย พิทักษ์', pos: 'พนักงานเปล', duty: 'ลงทะเบียนผู้ป่วยด้วยระบบมือ (Manual)' }
+        ],
+        findings: {
+          pr: ['ไม่มีป้ายแจ้งผู้ป่วยว่าระบบขัดข้อง ทำให้เกิดความสับสน'],
+          dr: ['ไม่สามารถเรียกดูประวัติผู้ป่วยย้อนหลังจาก DR-Site ได้ทันที'],
+          staff: ['อัตรากำลังบันทึกข้อมูลแบบ Manual ไม่พอช่วงผู้ป่วยหนาแน่น'],
+          bcp: ['แบบฟอร์มสำรอง (กระดาษ) มีไม่เพียงพอ'],
+          other: ['เครื่องสำรองไฟ (UPS) บางจุดใช้งานได้ไม่ถึง 30 นาที']
+        } },
+      { date: '15 มิ.ย. 2568', time: '10:00–12:00', unit: 'งานเวชระเบียน', reporter: 'นางสาวพิมพ์ใจ ศรีสุข', issues: 3, status: 'approved',
+        participants: [ { name: 'น.ส.พิมพ์ใจ ศรีสุข', pos: 'นักวิชาการคอมพิวเตอร์', duty: 'ดูแลระบบเวชระเบียนสำรอง' } ],
+        findings: { dr: ['การค้นเวชระเบียนจากระบบสำรองช้ากว่าปกติ'], bcp: ['ขั้นตอนการขอเวชระเบียนแบบ Manual ยังไม่ชัดเจน'], pr: ['การสื่อสารระหว่างหน่วยงานล่าช้า'] } },
+      { date: '12 มิ.ย. 2568', time: '09:30–11:00', unit: 'กลุ่มงานเภสัชกรรม', reporter: 'ภก.วิชัย พรหมมา', issues: 4, status: 'approved',
+        participants: [ { name: 'ภก.วิชัย พรหมมา', pos: 'เภสัชกร', duty: 'จ่ายยาด้วยระบบสำรอง' } ],
+        findings: { dr: ['ระบบจ่ายยาสำรองไม่เชื่อมกับคลังยา'], staff: ['ต้องเพิ่มเจ้าหน้าที่ตรวจสอบยาซ้ำ'], bcp: ['คู่มือ BCP ของกลุ่มงานยังไม่ปรับปรุง'], other: ['เครื่องพิมพ์ฉลากยาสำรองไม่พร้อมใช้'] } },
+      { date: '08 มิ.ย. 2568', time: '14:00–16:00', unit: 'ห้องปฏิบัติการ (LAB)', reporter: 'ทนพ.ก้องภพ มั่นคง', issues: 6, status: 'pending',
+        participants: [ { name: 'ทนพ.ก้องภพ มั่นคง', pos: 'นักเทคนิคการแพทย์', duty: 'รายงานผลแล็บด้วยระบบสำรอง' } ],
+        findings: { dr: ['ผลแล็บไม่ส่งเข้าระบบ HIS อัตโนมัติ'], pr: ['แพทย์ไม่ทราบว่าต้องรับผลทางโทรศัพท์'], staff: ['เจ้าหน้าที่ไม่พอสำหรับการโทรแจ้งผล'], bcp: ['ไม่มีแบบฟอร์มรายงานผลฉุกเฉิน'], other: ['การ backup ข้อมูลแล็บไม่เป็นปัจจุบัน'] } }
+    ]
+  };
+
+  ASPECTS = [
+    { key: 'pr', th: 'ด้านการประชาสัมพันธ์', en: 'Communication', count: 8, color: '#5b9bf5' },
+    { key: 'dr', th: 'ระบบคอมพิวเตอร์ DR-Site', en: 'DR-Site', count: 14, color: '#34e3a4' },
+    { key: 'staff', th: 'ด้านอัตรากำลัง', en: 'Staffing', count: 6, color: '#a78bfa' },
+    { key: 'bcp', th: 'เอกสาร BCP ของหน่วยงาน', en: 'BCP Document', count: 9, color: '#fbbf24' },
+    { key: 'other', th: 'ด้านอื่นๆ', en: 'Others', count: 4, color: '#94a3b8' }
+  ];
+
+  componentDidMount() {
+    if (this.props.startScreen === 'dashboard' && !this.state.authed) {
+      this.setState({ authed: true, role: 'admin', screen: 'dashboard' });
+    }
+  }
+
+  swal(opts) { if (window.Swal) window.Swal.fire(Object.assign({ confirmButtonColor: '#1fb886', background: '#101b34', color: '#e8eefb' }, opts)); }
+  toast(title, icon) { if (window.Swal) window.Swal.fire({ toast: true, position: 'top-end', timer: 2200, showConfirmButton: false, icon: icon || 'success', title, background: '#101b34', color: '#e8eefb' }); }
+
+  icon(d, size) {
+    const h = React.createElement;
+    return h('svg', { viewBox: '0 0 24 24', width: size || 18, height: size || 18, fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' }, d.split('|').map((p, i) => h('path', { d: p, key: i })));
+  }
+
+  go(screen) { this.setState({ screen }); }
+
+  onLogin = (e) => { e.preventDefault(); const f = e.target; if (!f.username.value.trim() || !f.password.value) { this.swal({ icon: 'warning', title: 'ข้อมูลไม่ครบ', text: 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน' }); return; } this.setState({ authed: true, role: 'reporter', screen: 'dashboard' }); this.toast('ยินดีต้อนรับเข้าสู่ระบบ'); };
+  quick = (role) => { const lbl = { reporter: 'ผู้รายงาน', lead: 'หัวหน้าทีม / ผู้ตรวจ', admin: 'ผู้ดูแลระบบ' }[role]; this.setState({ authed: true, role, screen: 'dashboard' }); this.toast('เข้าสู่ระบบในมุมมอง ' + lbl); };
+  onQuickReporter = (e) => { e.preventDefault(); this.quick('reporter'); };
+  onQuickLead = (e) => { e.preventDefault(); this.quick('lead'); };
+  onQuickAdmin = (e) => { e.preventDefault(); this.quick('admin'); };
+  onForgot = (e) => { e.preventDefault(); this.swal({ icon: 'info', title: 'ลืมรหัสผ่าน', text: 'กรุณาติดต่อผู้ดูแลระบบ (ทีม Cyber Security) เพื่อรีเซ็ตรหัสผ่าน' }); };
+  onGoRegister = (e) => { e.preventDefault(); this.setState({ screen: 'register' }); };
+  onBackLogin = () => this.setState({ screen: 'login' });
+  onLogout = (e) => { e.preventDefault(); this.swal({ icon: 'question', title: 'ออกจากระบบ?', showCancelButton: true, confirmButtonText: 'ออกจากระบบ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#f87171' }).then ? window.Swal.fire({ icon: 'question', title: 'ออกจากระบบ?', showCancelButton: true, confirmButtonText: 'ออกจากระบบ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#f87171', background: '#101b34', color: '#e8eefb' }).then(r => { if (r.isConfirmed) this.setState({ authed: false, screen: 'login' }); }) : this.setState({ authed: false, screen: 'login' }); };
+
+  onRegister = (e) => {
+    e.preventDefault(); const f = e.target;
+    const name = f.fullname.value.trim(), phone = f.phone.value.trim(), email = f.email.value.trim().toLowerCase(), unit = f.unit.value, prof = f.prof.value;
+    if (!name || !phone || !email || !unit || !prof) { this.swal({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ' }); return; }
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (!/^0\d{8,9}$/.test(phoneDigits)) { this.swal({ icon: 'warning', title: 'เบอร์โทรไม่ถูกต้อง', text: 'กรุณากรอกเบอร์โทรศัพท์ 9–10 หลัก (ขึ้นต้นด้วย 0)' }); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { this.swal({ icon: 'warning', title: 'อีเมลไม่ถูกต้อง', text: 'รูปแบบอีเมลไม่ถูกต้อง เช่น name@ramanhosp.go.th' }); return; }
+    const dup = this.state.users.find(u => u.email.toLowerCase() === email || u.phone.replace(/\D/g, '') === phone.replace(/\D/g, ''));
+    if (dup) { this.swal({ icon: 'error', title: 'ลงทะเบียนซ้ำ!', html: 'อีเมลหรือเบอร์โทรนี้ถูกใช้ลงทะเบียนแล้ว<br><span style="font-size:13px;color:#93a4c4">ระบบป้องกันการลงทะเบียนซ้ำ (Duplicate Prevention)</span>' }); return; }
+    const u = { name, email, phone, unit, prof, team: f.team.value || '—', role: 'ผู้รายงาน', active: true };
+    this.setState({ users: [u, ...this.state.users] });
+    window.Swal.fire({ icon: 'success', title: 'ลงทะเบียนสำเร็จ', text: 'สร้างบัญชีผู้ใช้งานเรียบร้อยแล้ว สามารถเข้าสู่ระบบได้ทันที', confirmButtonColor: '#1fb886', background: '#101b34', color: '#e8eefb' }).then(() => this.setState({ screen: 'login' }));
+  };
+
+  setRole = (role) => this.setState({ role, screen: 'dashboard' });
+  setVariant = (variant) => this.setState({ variant });
+  onNewReport = () => this.setState({ screen: 'report' });
+
+  onAddParticipant = () => this.setState({ participants: [...this.state.participants, { id: this.state.nextPid }], nextPid: this.state.nextPid + 1 });
+  removeP = (id) => { if (this.state.participants.length <= 1) return; this.setState({ participants: this.state.participants.filter(p => p.id !== id) }); };
+
+  onSubmitReport = (e) => {
+    e.preventDefault(); const f = e.target;
+    if (!f.date.value || !f.unit.value) { this.swal({ icon: 'warning', title: 'ข้อมูลไม่ครบ', text: 'กรุณาระบุวันที่ซ้อมและหน่วยงาน' }); return; }
+    const fmt = (d) => { try { const dt = new Date(d); return dt.getDate() + ' ' + ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][dt.getMonth()] + ' ' + (dt.getFullYear() + 543); } catch (e) { return d; } };
+    const names = f.querySelectorAll('input[name="p_name"]'), poss = f.querySelectorAll('input[name="p_pos"]'), duties = f.querySelectorAll('input[name="p_duty"]');
+    const participants = []; names.forEach((el, i) => { if (el.value.trim()) participants.push({ name: el.value.trim(), pos: (poss[i] || {}).value || '—', duty: (duties[i] || {}).value || '—' }); });
+    const areas = f.querySelectorAll('textarea[name="aspect"]');
+    const findings = {}; let issues = 0;
+    areas.forEach((a, i) => { const items = a.value.split('\n').map(x => x.trim().replace(/^[•\-\d.\s]+/, '')).filter(Boolean); if (items.length) { findings[this.ASPECTS[i].key] = items; issues += items.length; } });
+    const rep = { date: fmt(f.date.value), time: (f.timeStart.value || '—') + '–' + (f.timeEnd.value || '—'), unit: f.unit.value, reporter: this.userName(), issues, status: 'pending', participants, findings };
+    this.setState({ reports: [rep, ...this.state.reports], participants: [{ id: 1 }, { id: 2 }], nextPid: 3 });
+    window.Swal.fire({ icon: 'success', title: 'ส่งรายงานสำเร็จ', html: 'บันทึกผลการซ้อมแผนเรียบร้อยแล้ว<br><span style="font-size:13px;color:#93a4c4">พบปัญหา ' + issues + ' ข้อ · สถานะ: รอตรวจสอบ</span>', confirmButtonColor: '#1fb886', background: '#101b34', color: '#e8eefb' }).then(() => this.setState({ screen: 'reports', currentReport: rep }));
+  };
+  onSaveDraft = () => this.toast('บันทึกร่างแล้ว', 'info');
+
+  statusInfo(st) {
+    if (st === 'approved') return { label: 'อนุมัติแล้ว', color: '#34e3a4', bg: 'rgba(52,227,164,.13)' };
+    if (st === 'rejected') return { label: 'ส่งกลับแก้ไข', color: '#f87171', bg: 'rgba(248,113,113,.13)' };
+    return { label: 'รอตรวจสอบ', color: '#fbbf24', bg: 'rgba(251,191,36,.13)' };
+  }
+  onView = (r) => this.setState({ currentReport: r, screen: 'detail' });
+  onBackReports = () => this.setState({ screen: 'reports' });
+  approveReport = () => { const cr = this.state.currentReport; const nr = Object.assign({}, cr, { status: 'approved' }); this.setState({ reports: this.state.reports.map(x => x === cr ? nr : x), currentReport: nr }); this.toast('อนุมัติรายงานเรียบร้อย'); };
+  rejectReport = () => { const cr = this.state.currentReport; window.Swal.fire({ input: 'textarea', inputLabel: 'เหตุผล / ข้อที่ต้องแก้ไข', inputPlaceholder: 'ระบุรายละเอียดที่ต้องการให้ผู้รายงานแก้ไข...', showCancelButton: true, confirmButtonText: 'ส่งกลับแก้ไข', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#f87171', background: '#101b34', color: '#e8eefb' }).then(res => { if (res.isConfirmed) { const nr = Object.assign({}, cr, { status: 'rejected' }); this.setState({ reports: this.state.reports.map(x => x === cr ? nr : x), currentReport: nr }); this.toast('ส่งกลับให้ผู้รายงานแก้ไขแล้ว', 'info'); } }); };
+
+  onAddUser = () => this.swal({ icon: 'info', title: 'เพิ่มผู้ใช้งาน', text: 'เปิดฟอร์มเพิ่มผู้ใช้งานใหม่ (เดโม)' });
+  onSaveSettings = () => this.toast('บันทึกการตั้งค่าเรียบร้อย');
+  toggleSetting = (k) => this.setState({ settings: Object.assign({}, this.state.settings, { [k]: !this.state.settings[k] }) });
+
+  exportFile = (type) => {
+    const map = { excel: 'Excel (.xlsx)', word: 'Word (.docx)', pdf: 'PDF (.pdf)' };
+    window.Swal.fire({ title: 'กำลังสร้างไฟล์ ' + map[type], html: 'ดึงข้อมูลจาก Google Sheets...', timer: 1400, timerProgressBar: true, allowOutsideClick: false, background: '#101b34', color: '#e8eefb', didOpen: () => window.Swal.showLoading() }).then(() => window.Swal.fire({ icon: 'success', title: 'ส่งออกสำเร็จ', text: 'ดาวน์โหลดไฟล์ ' + map[type] + ' เรียบร้อยแล้ว', confirmButtonColor: '#1fb886', background: '#101b34', color: '#e8eefb' }));
+  };
+  onExportExcel = () => this.exportFile('excel');
+  onExportWord = () => this.exportFile('word');
+  onExportPdf = () => this.exportFile('pdf');
+
+  userName() { return { reporter: 'ภก.วิชัย พรหมมา', lead: 'พว.อารยา ทองสุข', admin: 'นพ.สมชาย ใจดี' }[this.state.role]; }
+  roleLabel() { return { reporter: 'ผู้รายงาน', lead: 'หัวหน้าทีม / ผู้ตรวจ', admin: 'ผู้ดูแลระบบ (Admin)' }[this.state.role]; }
+
+  // ---- charts ----
+  lineChart() {
+    const h = React.createElement;
+    const data = [3, 5, 4, 8, 6, 9], labels = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.'];
+    const W = 600, H = 250, L = 38, R = 14, T = 16, B = 34, max = 10;
+    const ix = i => L + i * ((W - L - R) / (data.length - 1));
+    const iy = v => T + (1 - v / max) * (H - T - B);
+    const pts = data.map((v, i) => ix(i) + ',' + iy(v)).join(' ');
+    const area = ix(0) + ',' + iy(0) + ' ' + pts + ' ' + ix(data.length - 1) + ',' + iy(0);
+    const grid = [0, 2, 4, 6, 8, 10].map((v, i) => h('g', { key: 'g' + i }, h('line', { x1: L, y1: iy(v), x2: W - R, y2: iy(v), stroke: 'rgba(124,148,184,.1)', strokeWidth: 1 }), h('text', { x: L - 8, y: iy(v) + 4, fill: '#5f718e', fontSize: 10, textAnchor: 'end', fontFamily: 'IBM Plex Mono' }, v)));
+    return h('svg', { viewBox: '0 0 ' + W + ' ' + H, style: { width: '100%', height: 'auto', display: 'block' } },
+      h('defs', null, h('linearGradient', { id: 'lg', x1: 0, y1: 0, x2: 0, y2: 1 }, h('stop', { offset: '0%', stopColor: '#34e3a4', stopOpacity: .35 }), h('stop', { offset: '100%', stopColor: '#34e3a4', stopOpacity: 0 }))),
+      grid,
+      h('polygon', { points: area, fill: 'url(#lg)' }),
+      h('polyline', { points: pts, fill: 'none', stroke: '#34e3a4', strokeWidth: 2.5, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+      data.map((v, i) => h('g', { key: 'd' + i }, h('circle', { cx: ix(i), cy: iy(v), r: 4.5, fill: '#0a1428', stroke: '#34e3a4', strokeWidth: 2.5 }), h('text', { x: ix(i), y: iy(v) - 12, fill: '#cfe0ff', fontSize: 11, fontWeight: 700, textAnchor: 'middle', fontFamily: 'IBM Plex Mono' }, v))),
+      labels.map((l, i) => h('text', { key: 'l' + i, x: ix(i), y: H - 10, fill: '#7e90ad', fontSize: 11, textAnchor: 'middle' }, l))
+    );
+  }
+
+  barChart() {
+    const h = React.createElement;
+    const a = this.ASPECTS, labels = ['ปชส.', 'DR-Site', 'กำลังคน', 'BCP', 'อื่นๆ'];
+    const W = 600, H = 250, L = 34, R = 14, T = 16, B = 36, max = 16;
+    const iw = (W - L - R) / a.length, bw = iw * 0.5;
+    const iy = v => T + (1 - v / max) * (H - T - B);
+    const grid = [0, 4, 8, 12, 16].map((v, i) => h('g', { key: 'g' + i }, h('line', { x1: L, y1: iy(v), x2: W - R, y2: iy(v), stroke: 'rgba(124,148,184,.1)' }), h('text', { x: L - 8, y: iy(v) + 4, fill: '#5f718e', fontSize: 10, textAnchor: 'end', fontFamily: 'IBM Plex Mono' }, v)));
+    return h('svg', { viewBox: '0 0 ' + W + ' ' + H, style: { width: '100%', height: 'auto', display: 'block' } },
+      grid,
+      a.map((it, i) => { const x = L + i * iw + (iw - bw) / 2; const y = iy(it.count); return h('g', { key: it.key }, h('rect', { x, y, width: bw, height: (H - B) - y, rx: 5, fill: it.color, opacity: .9 }), h('text', { x: x + bw / 2, y: y - 8, fill: '#cfe0ff', fontSize: 12, fontWeight: 700, textAnchor: 'middle', fontFamily: 'IBM Plex Mono' }, it.count), h('text', { x: x + bw / 2, y: H - 10, fill: '#9fb0cd', fontSize: 11, textAnchor: 'middle' }, labels[i])); })
+    );
+  }
+
+  donutBlock() {
+    const h = React.createElement;
+    const a = this.ASPECTS, total = a.reduce((s, x) => s + x.count, 0);
+    const cx = 90, cy = 90, r = 62, C = 2 * Math.PI * r; let acc = 0;
+    const segs = a.map(it => { const frac = it.count / total; const el = h('circle', { key: it.key, cx, cy, r, fill: 'none', stroke: it.color, strokeWidth: 22, strokeDasharray: (frac * C) + ' ' + C, strokeDashoffset: -acc * C, transform: 'rotate(-90 ' + cx + ' ' + cy + ')', strokeLinecap: 'butt' }); acc += frac; return el; });
+    const svg = h('svg', { viewBox: '0 0 180 180', style: { width: '160px', height: '160px', flex: '0 0 auto' } }, h('circle', { cx, cy, r, fill: 'none', stroke: 'rgba(124,148,184,.08)', strokeWidth: 22 }), segs, h('text', { x: cx, y: cy - 4, fill: '#fff', fontSize: 30, fontWeight: 700, textAnchor: 'middle', fontFamily: 'IBM Plex Mono' }, total), h('text', { x: cx, y: cy + 16, fill: '#7e90ad', fontSize: 11, textAnchor: 'middle' }, 'ปัญหาทั้งหมด'));
+    const legend = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '9px', flex: 1 } }, a.map(it => h('div', { key: it.key, style: { display: 'flex', alignItems: 'center', gap: '9px', fontSize: '12.5px' } }, h('span', { style: { width: '10px', height: '10px', borderRadius: '3px', background: it.color, flex: '0 0 auto' } }), h('span', { style: { flex: 1, color: '#aebbd4', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, it.th), h('span', { style: { fontFamily: 'IBM Plex Mono', fontWeight: 700, color: '#fff' } }, it.count))));
+    return h('div', { style: { display: 'flex', alignItems: 'center', gap: '18px', marginTop: '8px', flex: 1 } }, svg, legend);
+  }
+
+  recentTable() {
+    const h = React.createElement;
+    const rows = this.state.reports.slice(0, 5);
+    return h('div', { style: { background: '#101b34', border: '1px solid rgba(124,148,184,.14)', borderRadius: '16px', padding: '20px' } },
+      h('div', { style: { fontSize: '15px', fontWeight: 600 } }, 'รายงานล่าสุด'),
+      h('div', { style: { fontSize: '11.5px', color: '#5f718e', marginBottom: '12px', fontFamily: 'IBM Plex Mono' } }, 'RECENT REPORTS'),
+      h('div', { style: { display: 'flex', flexDirection: 'column' } }, rows.map((r, i) => h('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderTop: i ? '1px solid rgba(124,148,184,.07)' : 'none' } },
+        h('div', { style: { flex: 1, minWidth: 0 } }, h('div', { style: { fontSize: '13px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, r.unit), h('div', { style: { fontSize: '11px', color: '#5f718e', fontFamily: 'IBM Plex Mono' } }, r.date)),
+        h('div', { style: { fontFamily: 'IBM Plex Mono', fontWeight: 700, color: '#fbbf24', fontSize: '13px' } }, r.issues + ' ข้อ'),
+        h('span', { style: { fontSize: '11px', fontWeight: 600, padding: '3px 9px', borderRadius: '999px', background: r.status === 'approved' ? 'rgba(52,227,164,.14)' : 'rgba(251,191,36,.14)', color: r.status === 'approved' ? '#34e3a4' : '#fbbf24' } }, r.status === 'approved' ? 'อนุมัติ' : 'รอตรวจ')
+      )))
+    );
+  }
+
+  navConfig() {
+    const role = this.state.role;
+    const items = [
+      { id: 'dashboard', label: 'แดชบอร์ด', icon: 'M3 3h7v8H3z|M14 3h7v5h-7z|M14 12h7v9h-7z|M3 15h7v6H3z', roles: ['reporter', 'lead', 'admin'] },
+      { id: 'report', label: 'บันทึกผลการซ้อม', icon: 'M12 20h9|M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z', roles: ['reporter', 'lead', 'admin'] },
+      { id: 'reports', label: role === 'reporter' ? 'รายงานของฉัน' : 'รายงานทั้งหมด', icon: 'M8 6h13|M8 12h13|M8 18h13|M3 6h.01|M3 12h.01|M3 18h.01', roles: ['reporter', 'lead', 'admin'], badge: role === 'reporter' ? null : '2' },
+      { id: 'admin-users', label: 'จัดการผู้ใช้งาน', icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2|M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z|M23 21v-2a4 4 0 0 0-3-3.87|M16 3.13a4 4 0 0 1 0 7.75', roles: ['admin'] },
+      { id: 'admin-settings', label: 'ตั้งค่าระบบ', icon: 'M4 21v-7|M4 10V3|M12 21v-9|M12 8V3|M20 21v-5|M20 12V3|M1 14h6|M9 8h6|M17 16h6', roles: ['admin'] },
+      { id: 'admin-export', label: 'ส่งออกข้อมูล', icon: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4|M7 10l5 5 5-5|M12 15V3', roles: ['admin'] }
+    ];
+    return items.filter(it => it.roles.includes(role));
+  }
+
+  pageMeta() {
+    const m = {
+      dashboard: ['แดชบอร์ด', 'DASHBOARD', 'ภาพรวมสถิติการซ้อมแผน BCP / DRP'],
+      report: ['บันทึกผลการซ้อม', 'NEW REPORT', 'กรอกข้อมูลผลการซ้อมแผนดำเนินงานต่อเนื่อง'],
+      reports: ['รายงานผลการซ้อม', 'REPORTS', 'รายการรายงานผลการซ้อมแผนทั้งหมด'],
+      'admin-users': ['จัดการผู้ใช้งาน', 'USER MANAGEMENT', 'จัดการบัญชีและสิทธิ์การเข้าใช้งานระบบ'],
+      'admin-settings': ['ตั้งค่าระบบ', 'SYSTEM SETTINGS', 'กำหนดค่าการทำงานของระบบ'],
+      'admin-export': ['ส่งออกข้อมูล', 'DATA EXPORT', 'ดึงข้อมูลรายงานเป็น Excel / Word / PDF'],
+      'detail': ['รายละเอียดรายงาน', 'REPORT DETAIL', 'ผลการซ้อมแผน BCP / DRP ฉบับเต็ม']
+    };
+    return m[this.state.screen] || m.dashboard;
+  }
+
+  renderVals() {
+    const s = this.state, h = React.createElement;
+    const navItems = this.navConfig().map(it => ({
+      label: it.label, icon: this.icon(it.icon, 18), badge: it.badge,
+      onClick: (e) => { e.preventDefault(); this.go(it.id); },
+      style: {
+        display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 13px', borderRadius: '10px',
+        fontSize: '13.5px', fontWeight: s.screen === it.id ? 600 : 500, textDecoration: 'none',
+        color: s.screen === it.id ? '#062417' : '#aebbd4',
+        background: s.screen === it.id ? 'linear-gradient(180deg,#34e3a4,#1fb886)' : 'transparent',
+        boxShadow: s.screen === it.id ? '0 4px 12px rgba(52,227,164,.2)' : 'none'
+      }
+    }));
+
+    const roleTabs = [['reporter', 'ผู้รายงาน'], ['lead', 'หัวหน้าทีม'], ['admin', 'แอดมิน']].map(([r, l]) => ({
+      label: l, onClick: () => this.setRole(r),
+      style: { padding: '6px 11px', border: 'none', borderRadius: '7px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', background: s.role === r ? '#34e3a4' : 'transparent', color: s.role === r ? '#062417' : '#93a4c4' }
+    }));
+
+    const variantTabs = [['a', 'A · กริด'], ['b', 'B · Command'], ['c', 'C · โฟกัส']].map(([v, l]) => ({
+      label: l, onClick: () => this.setVariant(v),
+      style: { padding: '6px 12px', border: 'none', borderRadius: '7px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', background: s.variant === v ? '#34e3a4' : 'transparent', color: s.variant === v ? '#062417' : '#93a4c4' }
+    }));
+    const variantDesc = { a: 'การ์ดสรุป + กราฟแบบกริด 2×2', b: 'ศูนย์เฝ้าระวังแบบทีม Security', c: 'เน้นเล่าเรื่องทีละกราฟ' }[s.variant];
+
+    const kpiDefs = [
+      { value: '18', unit: '/24', label: 'หน่วยงานที่ส่งรายงาน', en: 'UNITS REPORTING', color: '#34e3a4', icon: this.icon('M3 21h18|M5 21V7l8-4v18|M19 21V11l-6-4', 16), trend: '+3', up: true },
+      { value: '7', unit: 'ครั้ง', label: 'การซ้อมเดือนนี้', en: 'DRILLS THIS MONTH', color: '#5b9bf5', icon: this.icon('M12 2v4|M12 18v4|M2 12h4|M18 12h4|M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z', 16), trend: '+2', up: true },
+      { value: '41', unit: 'ข้อ', label: 'ปัญหาที่พบรวม', en: 'TOTAL ISSUES', color: '#fbbf24', icon: this.icon('M12 9v4|M12 17h.01|M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z', 16), trend: '-5', up: false },
+      { value: '5', unit: 'รายการ', label: 'รอการตรวจสอบ', en: 'PENDING REVIEW', color: '#a78bfa', icon: this.icon('M12 8v4l3 3|M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z', 16), trend: null }
+    ];
+    const kpis = kpiDefs.map(k => ({
+      value: k.value, unit: k.unit, label: k.label, en: k.en, color: k.color, icon: k.icon,
+      iconBg: k.color.replace(')', '') + '22', glow: 'rgba(52,227,164,.12)',
+      trend: k.trend,
+      trendStyle: { fontSize: '12px', fontWeight: 700, fontFamily: 'IBM Plex Mono', color: k.up ? '#34e3a4' : '#f87171', background: k.up ? 'rgba(52,227,164,.12)' : 'rgba(248,113,113,.12)', padding: '2px 8px', borderRadius: '999px' }
+    }));
+    // iconBg fix (hex+alpha): use rgba via color map
+    const bgMap = { '#34e3a4': 'rgba(52,227,164,.14)', '#5b9bf5': 'rgba(91,155,245,.14)', '#fbbf24': 'rgba(251,191,36,.14)', '#a78bfa': 'rgba(167,139,250,.14)' };
+    kpis.forEach((k, i) => { k.iconBg = bgMap[kpiDefs[i].color]; });
+
+    const total = this.ASPECTS.reduce((a, b) => a + b.count, 0);
+    const maxc = Math.max.apply(null, this.ASPECTS.map(a => a.count));
+    const aspects = this.ASPECTS.map(a => ({ th: a.th, en: a.en, color: a.color, count: a.count, pct: Math.round(a.count / maxc * 100) + '%' }));
+
+    const reports = s.reports.map(r => {
+      const si = this.statusInfo(r.status);
+      return {
+        date: r.date, time: r.time, unit: r.unit, reporter: r.reporter, issues: r.issues,
+        statusLabel: si.label,
+        statusStyle: { fontSize: '12px', fontWeight: 600, padding: '4px 11px', borderRadius: '999px', background: si.bg, color: si.color },
+        onView: () => this.onView(r)
+      };
+    });
+
+    const cr = s.currentReport;
+    const detail = cr ? {
+      unit: cr.unit, date: cr.date, time: cr.time, reporter: cr.reporter, issues: cr.issues,
+      statusLabel: this.statusInfo(cr.status).label,
+      statusStyle: { fontSize: '13px', fontWeight: 600, padding: '5px 14px', borderRadius: '999px', background: this.statusInfo(cr.status).bg, color: this.statusInfo(cr.status).color },
+      participants: (cr.participants || []),
+      hasParticipants: (cr.participants || []).length > 0,
+      findings: this.ASPECTS.map(a => { const items = (cr.findings && cr.findings[a.key]) || []; return { th: a.th, en: a.en, color: a.color, items, count: items.length, hasItems: items.length > 0, noItems: items.length === 0 }; }),
+      canApprove: (s.role === 'lead' || s.role === 'admin') && cr.status !== 'approved'
+    } : null;
+
+    const roleStyleMap = { 'แอดมิน': ['rgba(248,113,113,.13)', '#f87171'], 'หัวหน้าทีม': ['rgba(91,155,245,.13)', '#5b9bf5'], 'ผู้รายงาน': ['rgba(124,148,184,.13)', '#aebbd4'] };
+    const users = s.users.map(u => ({
+      name: u.name, email: u.email, unit: u.unit, prof: u.prof, team: u.team, role: u.role,
+      roleStyle: { fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: (roleStyleMap[u.role] || roleStyleMap['ผู้รายงาน'])[0], color: (roleStyleMap[u.role] || roleStyleMap['ผู้รายงาน'])[1] },
+      activeLabel: u.active ? 'ใช้งาน' : 'ระงับ',
+      activeStyle: { fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: u.active ? 'rgba(52,227,164,.13)' : 'rgba(124,148,184,.13)', color: u.active ? '#34e3a4' : '#7e90ad' }
+    }));
+
+    const settingsToggles = [
+      { key: 'dup', label: 'ป้องกันการลงทะเบียนซ้ำ', desc: 'ตรวจสอบอีเมลและเบอร์โทรซ้ำอัตโนมัติ' },
+      { key: 'email', label: 'แจ้งเตือนทางอีเมล', desc: 'ส่งอีเมลเมื่อมีรายงานใหม่' },
+      { key: 'twofa', label: 'ยืนยันตัวตน 2 ขั้นตอน (2FA)', desc: 'เพิ่มความปลอดภัยในการเข้าสู่ระบบ' },
+      { key: 'auto', label: 'สำรองข้อมูลอัตโนมัติ', desc: 'บันทึกข้อมูลลง Google Sheets ทุกครั้ง' }
+    ].map(t => {
+      const on = s.settings[t.key];
+      return { label: t.label, desc: t.desc, toggle: () => this.toggleSetting(t.key),
+        trackStyle: { width: '46px', height: '26px', borderRadius: '999px', border: 'none', cursor: 'pointer', position: 'relative', background: on ? '#1fb886' : 'rgba(124,148,184,.25)', transition: 'background .2s', padding: 0 },
+        knobStyle: { position: 'absolute', top: '3px', left: on ? '23px' : '3px', width: '20px', height: '20px', borderRadius: '50%', background: '#fff', transition: 'left .2s', display: 'block' } };
+    });
+
+    const meta = this.pageMeta();
+
+    return {
+      isLogin: !s.authed && s.screen === 'login',
+      isRegister: !s.authed && s.screen === 'register',
+      isApp: s.authed,
+      isDashboard: s.screen === 'dashboard',
+      isReport: s.screen === 'report',
+      isReports: s.screen === 'reports',
+      isDetail: s.screen === 'detail',
+      isAdminUsers: s.screen === 'admin-users',
+      isAdminSettings: s.screen === 'admin-settings',
+      isAdminExport: s.screen === 'admin-export',
+      isVarA: s.variant === 'a', isVarB: s.variant === 'b', isVarC: s.variant === 'c',
+      showKpiRow: true,
+      navItems, roleTabs, variantTabs, variantDesc,
+      showRoleSwitch: this.props.showRoleSwitcher ?? true,
+      kpis, aspects, reports, users, detail,
+      participants: s.participants.map(p => ({ id: p.id, remove: () => this.removeP(p.id) })),
+      settingsToggles,
+      userCount: s.users.length,
+      userName: this.userName(), userInitial: this.userName().replace(/^[^ ]*\./, '').trim().charAt(0) || 'R', roleLabel: this.roleLabel(),
+      pageTitle: meta[0], pageTitleEn: meta[1], pageSub: meta[2],
+      logoutIcon: this.icon('M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4|M16 17l5-5-5-5|M21 12H9', 18),
+      lineChart: this.lineChart(), barChart: this.barChart(), donutBlock: this.donutBlock(), recentTable: this.recentTable(),
+      formRef: (el) => { this.formEl = el; },
+      onLogin: this.onLogin, onQuickReporter: this.onQuickReporter, onQuickLead: this.onQuickLead, onQuickAdmin: this.onQuickAdmin,
+      onForgot: this.onForgot, onGoRegister: this.onGoRegister, onBackLogin: this.onBackLogin, onLogout: this.onLogout, onRegister: this.onRegister,
+      onNewReport: this.onNewReport, onAddParticipant: this.onAddParticipant, onSubmitReport: this.onSubmitReport, onSaveDraft: this.onSaveDraft,
+      onBackReports: this.onBackReports, onApprove: this.approveReport, onReject: this.rejectReport,
+      onAddUser: this.onAddUser, onSaveSettings: this.onSaveSettings,
+      onExportExcel: this.onExportExcel, onExportWord: this.onExportWord, onExportPdf: this.onExportPdf
+    };
+  }
+}
+</script>
+</body>
+</html>
