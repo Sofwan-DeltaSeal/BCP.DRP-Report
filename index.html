@@ -299,16 +299,7 @@ select.inp{background-color:#0a1428}
 
       <!-- ── DASHBOARD ── -->
       <div id="view-dashboard" class="hidden">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#93a4c4">
-            <span class="mono" style="color:#5f718e">LAYOUT</span>
-            <div style="display:flex;background:#0e1830;border:1px solid rgba(124,148,184,.16);border-radius:10px;padding:3px;gap:2px">
-              <button class="tab-btn" onclick="setVariant('a')" id="vt-a">A · กริด</button>
-              <button class="tab-btn" onclick="setVariant('b')" id="vt-b">B · Command</button>
-              <button class="tab-btn" onclick="setVariant('c')" id="vt-c">C · โฟกัส</button>
-            </div>
-            <span id="variant-desc" style="font-size:12.5px;color:#64758f">การ์ดสรุป + กราฟแบบกริด 2×2</span>
-          </div>
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:20px;flex-wrap:wrap;gap:12px">
           <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#7e90ad">
             <span style="width:7px;height:7px;border-radius:50%;background:#34e3a4;animation:pulseDot 1.6s infinite"></span><span id="live-label">เรียลไทม์ · กำลังเชื่อมต่อ…</span>
           </div>
@@ -939,7 +930,7 @@ function setVariant(v){
     $(`dash-${x}`)?.classList.toggle('hidden',x!==v);
   });
   const descs={a:'การ์ดสรุป + กราฟแบบกริด 2×2',b:'ศูนย์เฝ้าระวังแบบทีม Security',c:'เน้นเล่าเรื่องทีละกราฟ'};
-  $('variant-desc').textContent=descs[v];
+  const vd=$('variant-desc'); if(vd) vd.textContent=descs[v];
 }
 
 /* ═══════════════════ REPORT FORM ═══════════════════ */
