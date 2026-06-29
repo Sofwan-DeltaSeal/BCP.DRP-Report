@@ -598,19 +598,6 @@ async function diagnoseDB(){
   // test reports read
   const r=await sb.from('reports').select('id').limit(5);
   lines.push('อ่าน reports: '+(r.error?('✗ '+r.error.message+(r.error.code?' ['+r.error.code+']':'')):('✓ '+(r.data?.length||0)+' แถว')));
-  // test reports WRITE (insert a probe row, then delete it)
-  const probe=await sb.from('reports').insert({
-    reporter_id:session?.user?.id, reporter_name:'__probe__', unit:'__probe__',
-    report_date:new Date().toISOString().slice(0,10), report_time:'—', issues:0,
-    status:'pending', participants:[], findings:{}
-  }).select('id').single();
-  if(probe.error){
-    lines.push('เขียน reports: ✗ '+probe.error.message+(probe.error.code?' ['+probe.error.code+']':''));
-  } else {
-    lines.push('เขียน reports: ✓ สำเร็จ');
-    const del=await sb.from('reports').delete().eq('id',probe.data.id);
-    lines.push('ลบ probe: '+(del.error?('⚠ '+del.error.message):'✓ ล้างแล้ว'));
-  }
   showDiag(lines);
 }
 function showDiag(lines){
