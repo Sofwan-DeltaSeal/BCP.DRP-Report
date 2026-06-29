@@ -512,29 +512,8 @@ const S = {
   nextPid: 3,
   participants: [{id:1},{id:2}],
   settings: { dup:true, email:true, twofa:false, auto:true },
-  users: [
-    { name:'นพ.สมชาย ใจดี',    email:'somchai@ramanhosp.go.th', phone:'081-234-5678', unit:'ศูนย์เทคโนโลยีสารสนเทศ', prof:'นายแพทย์',               team:'หัวหน้าทีม BCP',           role:'แอดมิน',     active:true  },
-    { name:'พว.อารยา ทองสุข',  email:'araya@ramanhosp.go.th',   phone:'089-111-2222', unit:'ห้องฉุกเฉิน (ER)',        prof:'พยาบาลวิชาชีพ',           team:'ทีมนำด้านบริการ',           role:'หัวหน้าทีม', active:true  },
-    { name:'ภก.วิชัย พรหมมา',  email:'wichai@ramanhosp.go.th',  phone:'086-333-4444', unit:'กลุ่มงานเภสัชกรรม',      prof:'เภสัชกร',                 team:'ทีมนำด้านยา',               role:'ผู้รายงาน',  active:true  },
-    { name:'น.ส.พิมพ์ใจ ศรีสุข',email:'pimjai@ramanhosp.go.th', phone:'085-555-6666', unit:'งานเวชระเบียน',           prof:'นักวิชาการคอมพิวเตอร์',   team:'—',                         role:'ผู้รายงาน',  active:false }
-  ],
-  reports: [
-    { date:'21 มิ.ย. 2568', time:'09:00–11:30', unit:'ศูนย์เทคโนโลยีสารสนเทศ', reporter:'นพ.สมชาย ใจดี',   issues:5, status:'approved',
-      participants:[{name:'นพ.สมชาย ใจดี',pos:'นายแพทย์',duty:'ผู้บัญชาการเหตุการณ์'},{name:'นายธนากร รักษ์ไทย',pos:'นักวิชาการคอมพิวเตอร์',duty:'กู้คืนระบบ DR-Site'},{name:'น.ส.กมลชนก สุขใจ',pos:'เจ้าพนักงานธุรการ',duty:'ประสานงานและบันทึก'}],
-      findings:{ dr:['การสลับไปยัง DR-Site ใช้เวลา 25 นาที เกินเป้าหมาย 15 นาที','พบค่า config ฐานข้อมูลสำรองไม่ตรงกับระบบหลัก'], pr:['การแจ้งเตือนผ่านกลุ่ม LINE ล่าช้ากว่าแผน'], staff:['เจ้าหน้าที่เวรดึกยังไม่คุ้นเคยขั้นตอน failover'], bcp:['เอกสาร BCP ยังไม่แจกจ่ายครบทุกจุดบริการ'] }},
-    { date:'18 มิ.ย. 2568', time:'13:30–15:00', unit:'ห้องฉุกเฉิน (ER)',        reporter:'พว.อารยา ทองสุข',  issues:7, status:'pending',
-      participants:[{name:'พว.อารยา ทองสุข',pos:'พยาบาลวิชาชีพ',duty:'หัวหน้าทีมประจำจุด ER'},{name:'นายสุรชัย พิทักษ์',pos:'พนักงานเปล',duty:'ลงทะเบียนผู้ป่วย Manual'}],
-      findings:{ pr:['ไม่มีป้ายแจ้งผู้ป่วยว่าระบบขัดข้อง'], dr:['ไม่สามารถเรียกดูประวัติผู้ป่วยจาก DR-Site ได้ทันที'], staff:['อัตรากำลัง Manual ไม่พอช่วงผู้ป่วยหนาแน่น'], bcp:['แบบฟอร์มสำรองมีไม่เพียงพอ'], other:['เครื่องสำรองไฟ UPS บางจุดใช้งานได้ไม่ถึง 30 นาที'] }},
-    { date:'15 มิ.ย. 2568', time:'10:00–12:00', unit:'งานเวชระเบียน',           reporter:'น.ส.พิมพ์ใจ ศรีสุข',issues:3, status:'approved',
-      participants:[{name:'น.ส.พิมพ์ใจ ศรีสุข',pos:'นักวิชาการคอมพิวเตอร์',duty:'ดูแลระบบเวชระเบียนสำรอง'}],
-      findings:{ dr:['การค้นเวชระเบียนจากระบบสำรองช้ากว่าปกติ'], bcp:['ขั้นตอน Manual ยังไม่ชัดเจน'], pr:['การสื่อสารระหว่างหน่วยงานล่าช้า'] }},
-    { date:'12 มิ.ย. 2568', time:'09:30–11:00', unit:'กลุ่มงานเภสัชกรรม',     reporter:'ภก.วิชัย พรหมมา',  issues:4, status:'approved',
-      participants:[{name:'ภก.วิชัย พรหมมา',pos:'เภสัชกร',duty:'จ่ายยาด้วยระบบสำรอง'}],
-      findings:{ dr:['ระบบจ่ายยาสำรองไม่เชื่อมกับคลังยา'], staff:['ต้องเพิ่มเจ้าหน้าที่ตรวจสอบยาซ้ำ'], bcp:['คู่มือ BCP ยังไม่ปรับปรุง'], other:['เครื่องพิมพ์ฉลากยาสำรองไม่พร้อมใช้'] }},
-    { date:'08 มิ.ย. 2568', time:'14:00–16:00', unit:'ห้องปฏิบัติการ (LAB)',   reporter:'ทนพ.ก้องภพ มั่นคง',issues:6, status:'pending',
-      participants:[{name:'ทนพ.ก้องภพ มั่นคง',pos:'นักเทคนิคการแพทย์',duty:'รายงานผลแล็บด้วยระบบสำรอง'}],
-      findings:{ dr:['ผลแล็บไม่ส่งเข้าระบบ HIS อัตโนมัติ'], pr:['แพทย์ไม่ทราบว่าต้องรับผลทางโทรศัพท์'], staff:['เจ้าหน้าที่ไม่พอสำหรับการโทรแจ้งผล'], bcp:['ไม่มีแบบฟอร์มรายงานผลฉุกเฉิน'], other:['การ backup ข้อมูลแล็บไม่เป็นปัจจุบัน'] }}
-  ]
+  users: [],
+  reports: []
 };
 
 /* ═══════════════════ HELPERS ═══════════════════ */
@@ -748,12 +727,15 @@ function kpiCardHTML(v,unit,label,en,color,iconD,trend,up){
 }
 
 function renderDashboard(){
-  // KPIs
+  // KPIs computed from real data
+  const units=[...new Set(S.reports.map(r=>r.unit))].length;
+  const totalIssues=S.reports.reduce((s,r)=>s+(r.issues||0),0);
+  const pending=S.reports.filter(r=>r.status==='pending').length;
   $('kpi-row').innerHTML = [
-    {v:'18',unit:'/24',label:'หน่วยงานที่ส่งรายงาน',en:'UNITS REPORTING',color:'#34e3a4',icon:'M3 21h18|M5 21V7l8-4v18|M19 21V11l-6-4',trend:'+3',up:true},
-    {v:'7',unit:'ครั้ง',label:'การซ้อมเดือนนี้',en:'DRILLS THIS MONTH',color:'#5b9bf5',icon:'M12 2v4|M12 18v4|M2 12h4|M18 12h4|M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',trend:'+2',up:true},
-    {v:'41',unit:'ข้อ',label:'ปัญหาที่พบรวม',en:'TOTAL ISSUES',color:'#fbbf24',icon:'M12 9v4|M12 17h.01|M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',trend:'-5',up:false},
-    {v:'5',unit:'รายการ',label:'รอการตรวจสอบ',en:'PENDING REVIEW',color:'#a78bfa',icon:'M12 8v4l3 3|M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z',trend:null}
+    {v:String(units),unit:'หน่วย',label:'หน่วยงานที่ส่งรายงาน',en:'UNITS REPORTING',color:'#34e3a4',icon:'M3 21h18|M5 21V7l8-4v18|M19 21V11l-6-4',trend:null},
+    {v:String(S.reports.length),unit:'ครั้ง',label:'รายงานทั้งหมด',en:'TOTAL REPORTS',color:'#5b9bf5',icon:'M12 2v4|M12 18v4|M2 12h4|M18 12h4|M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',trend:null},
+    {v:String(totalIssues),unit:'ข้อ',label:'ปัญหาที่พบรวม',en:'TOTAL ISSUES',color:'#fbbf24',icon:'M12 9v4|M12 17h.01|M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',trend:null},
+    {v:String(pending),unit:'รายการ',label:'รอการตรวจสอบ',en:'PENDING REVIEW',color:'#a78bfa',icon:'M12 8v4l3 3|M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z',trend:null}
   ].map(k=>kpiCardHTML(k.v,k.unit,k.label,k.en,k.color,k.icon,k.trend,k.up)).join('');
 
   // Charts
