@@ -67,6 +67,19 @@ alter table public.reports     enable row level security;
 alter table public.participants enable row level security;
 alter table public.findings    enable row level security;
 
+-- Drop existing policies before recreating
+drop policy if exists "users_select_all"            on public.users;
+drop policy if exists "users_admin_write"           on public.users;
+drop policy if exists "reports_select_all"          on public.reports;
+drop policy if exists "reports_insert_own"          on public.reports;
+drop policy if exists "reports_update_lead_admin"   on public.reports;
+drop policy if exists "participants_select"         on public.participants;
+drop policy if exists "participants_insert"         on public.participants;
+drop policy if exists "findings_select"             on public.findings;
+drop policy if exists "findings_insert"             on public.findings;
+drop policy if exists "drills_select"               on public.drills;
+drop policy if exists "drills_insert_lead_admin"    on public.drills;
+
 -- Users can read all users (for participant lookup)
 create policy "users_select_all" on public.users
   for select using (true);
