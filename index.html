@@ -577,23 +577,31 @@ function renderTopbar(){
 
 /* ═══════════════════ AUTH ═══════════════════ */
 async function loadUserProfile(authUser){
+  // Known accounts with fixed roles (bypass DB lookup)
+  const FIXED_ROLES = {
+    'auwabulhafeezabuthalhah@gmail.com': {role:'admin', name:'Admin', approved:true},
+    'cyber.raman24@gmail.com':           {role:'lead',  name:'Cyber Security Lead', approved:true}
+  };
+
   let profile = null;
   if(sb){
-    // Try lookup by id first, fallback to email
-    let {data} = await sb.from('users').select('*').eq('id', authUser.id).maybeSingle();
-    if(!data){
-      const res = await sb.from('users').select('*').eq('email', authUser.email).maybeSingle();
-      data = res.data;
-      // If found by email but id mismatch, sync the id
-      if(data) await sb.from('users').update({id: authUser.id}).eq('email', authUser.email);
+    const {data} = await sb.from('users').select('*').eq('id', authUser.id).maybeSingle();
+    if(data) profile = data;
+    else {
+      const {data:d2} = await sb.from('users').select('*').eq('email', authUser.email).maybeSingle();
+      if(d2) profile = d2;
     }
-    profile = data;
   }
+
+  // Apply fixed role override for known accounts
+  const fixed = FIXED_ROLES[authUser.email];
+  if(fixed) profile = Object.assign({id:authUser.id, email:authUser.email, unit:''}, profile||{}, fixed);
+
   S.currentUser = profile || {id:authUser.id, email:authUser.email, name:authUser.email.split('@')[0], role:'reporter', unit:'', approved:false};
   S.role = S.currentUser.role || 'reporter';
-  // Admin and lead always get in; reporters need approval
-  const needsApproval = S.role === 'reporter' && !S.currentUser.approved;
-  if(needsApproval){
+
+  // Admin and lead always enter; reporters need approval
+  if(S.role === 'reporter' && !S.currentUser.approved){
     $('pending-email').textContent = authUser.email;
     goScreen('pending');
     return;
