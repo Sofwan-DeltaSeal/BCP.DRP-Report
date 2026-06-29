@@ -579,18 +579,26 @@ function renderTopbar(){
 async function loadUserProfile(authUser){
   let profile = null;
   if(sb){
-    const {data} = await sb.from('users').select('*').eq('id', authUser.id).single();
+    // Try lookup by id first, fallback to email
+    let {data} = await sb.from('users').select('*').eq('id', authUser.id).maybeSingle();
+    if(!data){
+      const res = await sb.from('users').select('*').eq('email', authUser.email).maybeSingle();
+      data = res.data;
+      // If found by email but id mismatch, sync the id
+      if(data) await sb.from('users').update({id: authUser.id}).eq('email', authUser.email);
+    }
     profile = data;
   }
   S.currentUser = profile || {id:authUser.id, email:authUser.email, name:authUser.email.split('@')[0], role:'reporter', unit:'', approved:false};
   S.role = S.currentUser.role || 'reporter';
+  // Only reporters who are not approved see the pending screen
   if(S.currentUser.approved === false && S.role === 'reporter'){
     $('pending-email').textContent = authUser.email;
     goScreen('pending');
     return;
   }
   enterApp();
-  toast('ยินดีต้อนรับ '+S.currentUser.name);
+  toast('ยินดีต้อนรับ '+(S.currentUser.name || authUser.email));
 }
 
 function enterApp(){
