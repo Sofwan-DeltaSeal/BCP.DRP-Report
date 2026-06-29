@@ -591,8 +591,9 @@ async function loadUserProfile(authUser){
   }
   S.currentUser = profile || {id:authUser.id, email:authUser.email, name:authUser.email.split('@')[0], role:'reporter', unit:'', approved:false};
   S.role = S.currentUser.role || 'reporter';
-  // Only reporters who are not approved see the pending screen
-  if(S.currentUser.approved === false && S.role === 'reporter'){
+  // Admin and lead always get in; reporters need approval
+  const needsApproval = S.role === 'reporter' && !S.currentUser.approved;
+  if(needsApproval){
     $('pending-email').textContent = authUser.email;
     goScreen('pending');
     return;
