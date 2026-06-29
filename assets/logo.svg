@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220" role="img" aria-label="Raman Hospital">
+  <!-- orange building (right) -->
+  <path d="M210 42 L136 76 L136 206 L210 206 Z" fill="#ef9b3e"/>
+  <!-- blue building (left) -->
+  <path d="M30 42 L104 76 L104 206 L30 206 Z" fill="#54b9d6"/>
+  <!-- orange ring (right side of the central motif) -->
+  <circle cx="126" cy="120" r="46" fill="#ef9b3e"/>
+  <!-- white separation -->
+  <circle cx="126" cy="120" r="35" fill="#ffffff"/>
+  <!-- blue dot (left side of the central motif) -->
+  <circle cx="112" cy="120" r="33" fill="#54b9d6"/>
+</svg>
