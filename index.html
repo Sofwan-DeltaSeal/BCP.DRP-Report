@@ -111,8 +111,8 @@ select.inp{background-color:#0a1428}
         <p style="font-size:14px;color:#93a4c4;margin:0">Sign in · กรอกบัญชีผู้ใช้เพื่อเข้าใช้งาน</p>
       </div>
       <form id="form-login" autocomplete="on">
-        <label style="display:block;font-size:13px;font-weight:500;color:#aebbd4;margin-bottom:7px">ชื่อผู้ใช้ <span class="mono" style="color:#64758f">/ Username</span></label>
-        <input id="login-user" name="username" autocomplete="username" placeholder="กรอกชื่อผู้ใช้" class="inp" style="margin-bottom:18px">
+        <label style="display:block;font-size:13px;font-weight:500;color:#aebbd4;margin-bottom:7px">อีเมล <span class="mono" style="color:#64758f">/ Email</span></label>
+        <input id="login-user" name="email" type="email" autocomplete="email" placeholder="name@ramanhosp.go.th" class="inp" style="margin-bottom:18px">
         <label style="display:block;font-size:13px;font-weight:500;color:#aebbd4;margin-bottom:7px">รหัสผ่าน <span class="mono" style="color:#64758f">/ Password</span></label>
         <input id="login-pass" name="password" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่าน" class="inp" style="margin-bottom:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
@@ -159,6 +159,14 @@ select.inp{background-color:#0a1428}
         <div>
           <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">อีเมล <span style="color:#f87171">*</span></label>
           <input id="reg-email" name="email" type="email" placeholder="name@ramanhosp.go.th" class="inp">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">รหัสผ่าน <span style="color:#f87171">*</span></label>
+          <input id="reg-pass" name="password" type="password" autocomplete="new-password" placeholder="อย่างน้อย 6 ตัวอักษร" class="inp">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ยืนยันรหัสผ่าน <span style="color:#f87171">*</span></label>
+          <input id="reg-pass2" name="password2" type="password" autocomplete="new-password" placeholder="กรอกรหัสผ่านอีกครั้ง" class="inp">
         </div>
       </div>
       <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin:24px 0 16px" class="mono">สังกัด &amp; ตำแหน่ง · ORGANIZATION</div>
@@ -498,6 +506,7 @@ const ASPECTS = [
 const S = {
   screen: 'login',
   role: 'reporter',
+  currentUser: null,
   variant: 'a',
   currentReport: null,
   nextPid: 3,
@@ -537,7 +546,10 @@ function statusInfo(st){
   if(st==='rejected') return {label:'ส่งกลับแก้ไข', cls:'status-rejected'};
   return {label:'รอตรวจสอบ', cls:'status-pending'};
 }
-function currentUserName(){return {reporter:'ภก.วิชัย พรหมมา',lead:'พว.อารยา ทองสุข',admin:'นพ.สมชาย ใจดี'}[S.role];}
+function currentUserName(){
+  if(S.currentUser?.name) return S.currentUser.name;
+  return {reporter:'ภก.วิชัย พรหมมา',lead:'พว.อารยา ทองสุข',admin:'นพ.สมชาย ใจดี'}[S.role];
+}
 function roleLabelText(){return {reporter:'ผู้รายงาน',lead:'หัวหน้าทีม / ผู้ตรวจ',admin:'ผู้ดูแลระบบ (Admin)'}[S.role];}
 function fmtDate(d){try{const dt=new Date(d);return dt.getDate()+' '+['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][dt.getMonth()]+' '+(dt.getFullYear()+543);}catch(e){return d;}}
 
@@ -581,6 +593,18 @@ function renderTopbar(){
 }
 
 /* ═══════════════════ AUTH ═══════════════════ */
+async function loadUserProfile(authUser){
+  let profile = null;
+  if(sb){
+    const {data} = await sb.from('users').select('*').eq('id', authUser.id).single();
+    profile = data;
+  }
+  S.currentUser = profile || {id:authUser.id, email:authUser.email, name:authUser.email.split('@')[0], role:'reporter', unit:''};
+  S.role = S.currentUser.role;
+  enterApp();
+  toast('ยินดีต้อนรับ '+S.currentUser.name);
+}
+
 function enterApp(){
   goScreen('app');
   const n = currentUserName();
@@ -595,6 +619,7 @@ function enterApp(){
 
 function quickLogin(role){
   S.role = role;
+  S.currentUser = null;
   enterApp();
   toast('เข้าสู่ระบบในมุมมอง '+{reporter:'ผู้รายงาน',lead:'หัวหน้าทีม',admin:'แอดมิน'}[role]);
 }
@@ -613,7 +638,13 @@ function setRole(role){
 function doLogout(e){
   e.preventDefault();
   Swal.fire({icon:'question',title:'ออกจากระบบ?',showCancelButton:true,confirmButtonText:'ออกจากระบบ',cancelButtonText:'ยกเลิก',confirmButtonColor:'#f87171',background:'#101b34',color:'#e8eefb'})
-  .then(r=>{if(r.isConfirmed){S.role='reporter';goScreen('login');}});
+  .then(async r=>{
+    if(r.isConfirmed){
+      if(sb) await sb.auth.signOut();
+      S.role='reporter'; S.currentUser=null;
+      goScreen('login');
+    }
+  });
 }
 
 /* ═══════════════════ SIDEBAR ═══════════════════ */
@@ -945,30 +976,49 @@ function exportFile(type){
 }
 
 /* ═══════════════════ FORM HANDLERS ═══════════════════ */
-document.getElementById('form-login').addEventListener('submit',e=>{
+document.getElementById('form-login').addEventListener('submit', async e=>{
   e.preventDefault();
-  const u=$('login-user').value.trim(),p=$('login-pass').value;
-  if(!u||!p){swal({icon:'warning',title:'ข้อมูลไม่ครบ',text:'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน'});return;}
-  S.role='reporter';enterApp();toast('ยินดีต้อนรับเข้าสู่ระบบ');
+  const email=$('login-user').value.trim(), pass=$('login-pass').value;
+  if(!email||!pass){swal({icon:'warning',title:'ข้อมูลไม่ครบ',text:'กรุณากรอกอีเมลและรหัสผ่าน'});return;}
+  if(!sb){S.role='reporter';enterApp();toast('ยินดีต้อนรับเข้าสู่ระบบ');return;}
+  const btn=e.target.querySelector('button[type=submit]');
+  btn.disabled=true; btn.textContent='กำลังเข้าสู่ระบบ...';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false; btn.textContent='เข้าสู่ระบบ';
+  if(error){swal({icon:'error',title:'เข้าสู่ระบบไม่สำเร็จ',text:error.message==='Invalid login credentials'?'อีเมลหรือรหัสผ่านไม่ถูกต้อง':error.message});return;}
+  await loadUserProfile(data.user);
 });
 
 document.getElementById('btn-forgot').addEventListener('click',e=>{
   e.preventDefault();swal({icon:'info',title:'ลืมรหัสผ่าน',text:'กรุณาติดต่อผู้ดูแลระบบ (ทีม Cyber Security) เพื่อรีเซ็ตรหัสผ่าน'});
 });
 
-document.getElementById('form-register').addEventListener('submit',e=>{
+document.getElementById('form-register').addEventListener('submit', async e=>{
   e.preventDefault();
-  const name=$('reg-fullname').value.trim(),phone=$('reg-phone').value.trim(),email=$('reg-email').value.trim().toLowerCase();
-  const unit=$('reg-unit').value,prof=$('reg-prof').value,team=$('reg-team').value;
-  if(!name||!phone||!email||!unit||!prof){swal({icon:'warning',title:'ข้อมูลไม่ครบถ้วน',text:'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ'});return;}
+  const name=$('reg-fullname').value.trim(), phone=$('reg-phone').value.trim();
+  const email=$('reg-email').value.trim().toLowerCase();
+  const unit=$('reg-unit').value, prof=$('reg-prof').value, team=$('reg-team').value;
+  const pass=$('reg-pass').value, pass2=$('reg-pass2').value;
+  if(!name||!phone||!email||!unit||!prof||!pass){swal({icon:'warning',title:'ข้อมูลไม่ครบถ้วน',text:'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ'});return;}
+  if(pass!==pass2){swal({icon:'warning',title:'รหัสผ่านไม่ตรงกัน',text:'กรุณากรอกรหัสผ่านให้ตรงกันทั้ง 2 ช่อง'});return;}
+  if(pass.length<6){swal({icon:'warning',title:'รหัสผ่านสั้นเกินไป',text:'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'});return;}
   const digits=phone.replace(/\D/g,'');
   if(!/^0\d{8,9}$/.test(digits)){swal({icon:'warning',title:'เบอร์โทรไม่ถูกต้อง',text:'กรุณากรอกเบอร์โทรศัพท์ 9–10 หลัก (ขึ้นต้นด้วย 0)'});return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){swal({icon:'warning',title:'อีเมลไม่ถูกต้อง',text:'รูปแบบอีเมลไม่ถูกต้อง เช่น name@ramanhosp.go.th'});return;}
-  const dup=S.users.find(u=>u.email.toLowerCase()===email||u.phone.replace(/\D/g,'')===digits);
-  if(dup){swal({icon:'error',title:'ลงทะเบียนซ้ำ!',html:'อีเมลหรือเบอร์โทรนี้ถูกใช้ลงทะเบียนแล้ว<br><span style="font-size:13px;color:#93a4c4">ระบบป้องกันการลงทะเบียนซ้ำ (Duplicate Prevention)</span>'});return;}
-  S.users.unshift({name,email,phone,unit,prof,team:team||'—',role:'ผู้รายงาน',active:true});
-  Swal.fire({icon:'success',title:'ลงทะเบียนสำเร็จ',text:'สร้างบัญชีผู้ใช้งานเรียบร้อยแล้ว สามารถเข้าสู่ระบบได้ทันที',confirmButtonColor:'#1fb886',background:'#101b34',color:'#e8eefb'})
-  .then(()=>goScreen('login'));
+  if(!sb){
+    const dup=S.users.find(u=>u.email.toLowerCase()===email||u.phone.replace(/\D/g,'')===digits);
+    if(dup){swal({icon:'error',title:'ลงทะเบียนซ้ำ!',html:'อีเมลหรือเบอร์โทรนี้ถูกใช้ลงทะเบียนแล้ว'});return;}
+    S.users.unshift({name,email,phone,unit,prof,team:team||'—',role:'ผู้รายงาน',active:true});
+    Swal.fire({icon:'success',title:'ลงทะเบียนสำเร็จ',text:'สร้างบัญชีผู้ใช้งานเรียบร้อยแล้ว สามารถเข้าสู่ระบบได้ทันที',confirmButtonColor:'#1fb886',background:'#101b34',color:'#e8eefb'}).then(()=>goScreen('login'));
+    return;
+  }
+  const btn=e.target.querySelector('button[type=submit]');
+  btn.disabled=true; btn.textContent='กำลังลงทะเบียน...';
+  const {data,error}=await sb.auth.signUp({email,password:pass});
+  if(error){btn.disabled=false;btn.textContent='ลงทะเบียน';swal({icon:'error',title:'ลงทะเบียนไม่สำเร็จ',text:error.message});return;}
+  if(data.user) await sb.from('users').insert({id:data.user.id,email,name,role:'reporter',unit});
+  btn.disabled=false; btn.textContent='ลงทะเบียน';
+  Swal.fire({icon:'success',title:'ลงทะเบียนสำเร็จ',text:'สร้างบัญชีผู้ใช้งานเรียบร้อยแล้ว สามารถเข้าสู่ระบบได้ทันที',confirmButtonColor:'#1fb886',background:'#101b34',color:'#e8eefb'}).then(()=>goScreen('login'));
 });
 
 document.getElementById('form-report').addEventListener('submit',e=>{
@@ -987,7 +1037,16 @@ document.getElementById('form-report').addEventListener('submit',e=>{
 });
 
 /* ═══════════════════ BOOT ═══════════════════ */
-goScreen('login');
+(async()=>{
+  if(sb){
+    const {data:{session}}=await sb.auth.getSession();
+    if(session?.user){await loadUserProfile(session.user);return;}
+    sb.auth.onAuthStateChange(async(_,s)=>{
+      if(s?.user&&S.screen!=='app') await loadUserProfile(s.user);
+    });
+  }
+  goScreen('login');
+})();
 </script>
 </body>
 </html>
