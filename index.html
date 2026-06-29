@@ -177,31 +177,67 @@ select.inp{background-color:#0a1428}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
         <div style="grid-column:span 2">
           <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">หน่วยงาน / สังกัด <span style="color:#f87171">*</span></label>
-          <select id="reg-unit" class="inp">
+          <select id="reg-unit" class="inp" onchange="toggleOther(this,'reg-unit-other')">
             <option value="">— เลือกหน่วยงาน —</option>
-            <option>ศูนย์เทคโนโลยีสารสนเทศ</option><option>ห้องฉุกเฉิน (ER)</option>
-            <option>งานเวชระเบียน</option><option>กลุ่มงานเภสัชกรรม</option>
-            <option>ห้องปฏิบัติการ (LAB)</option><option>งานรังสีวิทยา (X-ray)</option>
-            <option>ผู้ป่วยนอก (OPD)</option><option>งานการเงินและบัญชี</option>
+            <option>กายภาพบำบัด</option>
+            <option>แพทย์แผนไทย</option>
+            <option>เทคนิคการแพทย์</option>
+            <option>สุขภาพจิตและยาเสพติด</option>
+            <option>ส่งเสริมสุขภาพ</option>
+            <option>อุบัติเหตุฉุกเฉิน</option>
+            <option>งานเภสัชกรรม</option>
+            <option>ผู้ป่วยในชาย</option>
+            <option>ผู้ป่วยในหญิง</option>
+            <option>ผู้ป่วยเด็ก</option>
+            <option>ผู้ป่วยพิเศษ</option>
+            <option>ผู้ป่วยนอก</option>
+            <option>สุขาภิบาล</option>
+            <option>งานบริหารทั่วไป</option>
+            <option>ศูนย์เครื่องมือแพทย์</option>
+            <option>สุขภาพดิจิทัล</option>
+            <option>ยุทธศาสตร์</option>
+            <option value="other">อื่นๆ (ระบุ)</option>
           </select>
+          <input id="reg-unit-other" class="inp hidden" style="margin-top:8px" placeholder="ระบุหน่วยงาน...">
         </div>
         <div>
           <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ตำแหน่งด้านวิชาชีพ <span style="color:#f87171">*</span></label>
-          <select id="reg-prof" class="inp">
+          <select id="reg-prof" class="inp" onchange="toggleOther(this,'reg-prof-other')">
             <option value="">— เลือก —</option>
-            <option>นายแพทย์ / แพทย์</option><option>พยาบาลวิชาชีพ</option>
-            <option>เภสัชกร</option><option>นักเทคนิคการแพทย์</option>
-            <option>นักวิชาการคอมพิวเตอร์</option><option>เจ้าพนักงานธุรการ</option><option>อื่นๆ</option>
+            <option>แพทย์</option>
+            <option>พยาบาล</option>
+            <option>เภสัชกร</option>
+            <option>ทันตแพทย์</option>
+            <option>นักกายภาพบำบัด</option>
+            <option>นักเทคนิคการแพทย์</option>
+            <option>แพทย์แผนไทย</option>
+            <option>นักวิชาการสาธารณสุข</option>
+            <option>นักวิชาการคอมพิวเตอร์</option>
+            <option>เจ้าพนักงานเภสัชกรรม</option>
+            <option>เจ้าพนักงานทันตกรรม</option>
+            <option>ผู้ช่วยพยาบาล</option>
+            <option>พนักงานบริการ</option>
+            <option>เจ้าหน้าที่การเงิน</option>
+            <option>พนักงานขับรถ</option>
+            <option>เวรเปล</option>
+            <option value="other">อื่นๆ (ระบุ)</option>
           </select>
+          <input id="reg-prof-other" class="inp hidden" style="margin-top:8px" placeholder="ระบุตำแหน่ง...">
         </div>
         <div>
           <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">ตำแหน่งด้านทีมนำ</label>
-          <select id="reg-team" class="inp">
+          <select id="reg-team" class="inp" onchange="toggleOther(this,'reg-team-other')">
             <option value="">— เลือก (ถ้ามี) —</option>
-            <option>หัวหน้าทีม BCP</option><option>ทีมนำด้านบริการ</option>
-            <option>ทีมนำด้านระบบสารสนเทศ</option><option>ทีมนำด้านยา</option>
-            <option>สมาชิกทีม / ผู้ปฏิบัติงาน</option>
+            <option>อนุกรรมการ IM&amp;KM</option>
+            <option>อนุกรรมการ RM</option>
+            <option>อนุกรรมการ PCT</option>
+            <option>อนุกรรมการ PCF</option>
+            <option>อนุกรรมการ PTC</option>
+            <option>อนุกรรมการ EQU</option>
+            <option>อนุกรรมการ ENV</option>
+            <option value="other">อื่นๆ (ระบุ)</option>
           </select>
+          <input id="reg-team-other" class="inp hidden" style="margin-top:8px" placeholder="ระบุตำแหน่ง...">
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px;background:rgba(91,155,245,.08);border:1px solid rgba(91,155,245,.22);border-radius:10px;padding:12px 14px;margin-top:22px">
@@ -500,11 +536,11 @@ try { sb = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } cat
 
 /* ═══════════════════ STATE ═══════════════════ */
 const ASPECTS = [
-  { key:'pr',    th:'ด้านการประชาสัมพันธ์',    en:'Communication', count:8,  color:'#5b9bf5' },
-  { key:'dr',    th:'ระบบคอมพิวเตอร์ DR-Site', en:'DR-Site',       count:14, color:'#34e3a4' },
-  { key:'staff', th:'ด้านอัตรากำลัง',          en:'Staffing',      count:6,  color:'#a78bfa' },
-  { key:'bcp',   th:'เอกสาร BCP ของหน่วยงาน', en:'BCP Document',  count:9,  color:'#fbbf24' },
-  { key:'other', th:'ด้านอื่นๆ',               en:'Others',        count:4,  color:'#94a3b8' }
+  { key:'pr',    th:'ด้านการประชาสัมพันธ์',    en:'Communication', count:0, color:'#5b9bf5' },
+  { key:'dr',    th:'ระบบคอมพิวเตอร์ DR-Site', en:'DR-Site',       count:0, color:'#34e3a4' },
+  { key:'staff', th:'ด้านอัตรากำลัง',          en:'Staffing',      count:0, color:'#a78bfa' },
+  { key:'bcp',   th:'เอกสาร BCP ของหน่วยงาน', en:'BCP Document',  count:0, color:'#fbbf24' },
+  { key:'other', th:'ด้านอื่นๆ',               en:'Others',        count:0, color:'#94a3b8' }
 ];
 
 const S = {
@@ -524,6 +560,14 @@ const S = {
 function swal(o){Swal.fire(Object.assign({confirmButtonColor:'#1fb886',background:'#101b34',color:'#e8eefb'},o));}
 function toast(title,icon){Swal.fire({toast:true,position:'top-end',timer:2200,showConfirmButton:false,icon:icon||'success',title,background:'#101b34',color:'#e8eefb'});}
 function $(id){return document.getElementById(id);}
+function toggleOther(sel,otherId){
+  const el=$(otherId);
+  if(sel.value==='other'){el.classList.remove('hidden');el.required=true;}
+  else{el.classList.add('hidden');el.required=false;el.value='';}
+}
+function resolveOther(sel,otherId){
+  return sel.value==='other' ? $(otherId).value.trim() : sel.value;
+}
 function statusInfo(st){
   if(st==='approved') return {label:'อนุมัติแล้ว', cls:'status-approved'};
   if(st==='rejected') return {label:'ส่งกลับแก้ไข', cls:'status-rejected'};
@@ -1036,7 +1080,9 @@ document.getElementById('form-register').addEventListener('submit', async e=>{
   e.preventDefault();
   const name=$('reg-fullname').value.trim(), phone=$('reg-phone').value.trim();
   const email=$('reg-email').value.trim().toLowerCase();
-  const unit=$('reg-unit').value, prof=$('reg-prof').value, team=$('reg-team').value;
+  const unit=resolveOther($('reg-unit'),'reg-unit-other');
+  const prof=resolveOther($('reg-prof'),'reg-prof-other');
+  const team=resolveOther($('reg-team'),'reg-team-other');
   const pass=$('reg-pass').value, pass2=$('reg-pass2').value;
   if(!name||!phone||!email||!unit||!prof||!pass){swal({icon:'warning',title:'ข้อมูลไม่ครบถ้วน',text:'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ'});return;}
   if(pass!==pass2){swal({icon:'warning',title:'รหัสผ่านไม่ตรงกัน',text:'กรุณากรอกรหัสผ่านให้ตรงกันทั้ง 2 ช่อง'});return;}
