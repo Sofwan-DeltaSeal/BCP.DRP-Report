@@ -310,7 +310,7 @@ select.inp{background-color:#0a1428}
             <span id="variant-desc" style="font-size:12.5px;color:#64758f">การ์ดสรุป + กราฟแบบกริด 2×2</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#7e90ad">
-            <span style="width:7px;height:7px;border-radius:50%;background:#34e3a4;animation:pulseDot 1.6s infinite"></span>ข้อมูล ณ มิ.ย. 2568
+            <span style="width:7px;height:7px;border-radius:50%;background:#34e3a4;animation:pulseDot 1.6s infinite"></span><span id="live-label">เรียลไทม์ · กำลังเชื่อมต่อ…</span>
           </div>
         </div>
 
@@ -630,12 +630,19 @@ async function loadReports(){
 }
 function computeAspectCounts(){
   ASPECTS.forEach(a=>a.count=0);
+  if(S.dashStats?.aspects){ ASPECTS.forEach(a=>{ a.count = S.dashStats.aspects[a.key]||0; }); return; }
   S.reports.forEach(r=>{
     if(r.findings) ASPECTS.forEach(a=>{ a.count += ((r.findings[a.key])||[]).length; });
   });
 }
 function monthlySeries(){
   const M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  if(S.dashStats?.monthly?.length){
+    return {
+      labels: S.dashStats.monthly.map(o=>M[parseInt(o.ym.slice(5,7),10)-1]),
+      data:   S.dashStats.monthly.map(o=>o.count)
+    };
+  }
   const now=new Date(),data=[],labels=[];
   for(let i=5;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
@@ -643,6 +650,35 @@ function monthlySeries(){
     data.push(S.reports.filter(r=>r._rawDate&&r._rawDate.getFullYear()===d.getFullYear()&&r._rawDate.getMonth()===d.getMonth()).length);
   }
   return {data,labels};
+}
+
+/* ═══════════════════ DASHBOARD: org-wide realtime stats ═══════════════════ */
+async function loadDashboardStats(){
+  if(!sb) return;
+  const {data,error}=await sb.rpc('get_dashboard_stats');
+  if(error){console.error('[dashboard_stats]',error);return;}
+  S.dashStats=data||null;
+}
+async function refreshDashboard(){
+  await loadDashboardStats();
+  if(S.currentView==='dashboard') renderDashboard();
+  renderSidebar(); // pending badge tracks live data
+}
+function startDashboardLive(){
+  stopDashboardLive();
+  if(!sb) return;
+  // instant push when DB rows change
+  try{
+    S.rtChannel=sb.channel('reports-rt')
+      .on('postgres_changes',{event:'*',schema:'public',table:'reports'},()=>refreshDashboard())
+      .subscribe();
+  }catch(e){console.error('[realtime]',e);}
+  // guaranteed refresh for every role (covers cases RLS hides from the push feed)
+  S.dashTimer=setInterval(()=>{ if(S.screen==='app') refreshDashboard(); }, 12000);
+}
+function stopDashboardLive(){
+  if(S.rtChannel){ try{sb.removeChannel(S.rtChannel);}catch(e){} S.rtChannel=null; }
+  if(S.dashTimer){ clearInterval(S.dashTimer); S.dashTimer=null; }
 }
 
 /* ═══════════════════ NAVIGATION ═══════════════════ */
@@ -660,6 +696,7 @@ async function goView(name){
   renderSidebar();
   renderTopbar();
   if(name==='dashboard'||name==='reports') await loadReports();
+  if(name==='dashboard') await loadDashboardStats();
   if(name==='dashboard') renderDashboard();
   if(name==='reports')   renderReports();
   if(name==='admin-users') renderUsers();
@@ -728,6 +765,7 @@ function enterApp(){
   $('user-avatar').textContent = n.replace(/^[^ ]*\./,'').trim().charAt(0)||'R';
   $('user-role-label').textContent = roleLabelText();
   renderSidebar();
+  startDashboardLive();
   goView('dashboard');
 }
 
@@ -736,8 +774,9 @@ function doLogout(e){
   Swal.fire({icon:'question',title:'ออกจากระบบ?',showCancelButton:true,confirmButtonText:'ออกจากระบบ',cancelButtonText:'ยกเลิก',confirmButtonColor:'#f87171',background:'#101b34',color:'#e8eefb'})
   .then(async r=>{
     if(r.isConfirmed){
+      stopDashboardLive();
       if(sb) await sb.auth.signOut();
-      S.role='reporter'; S.currentUser=null;
+      S.role='reporter'; S.currentUser=null; S.dashStats=null;
       goScreen('login');
     }
   });
@@ -822,13 +861,16 @@ function donutSVG(){
 }
 
 function recentTableHTML(){
-  const rows=S.reports.slice(0,5).map(r=>{
+  const src = S.dashStats?.recent
+    ? S.dashStats.recent.map(r=>({unit:r.unit,date:fmtDate(r.date),issues:r.issues,status:r.status}))
+    : S.reports.slice(0,5);
+  const rows=src.map(r=>{
     const si=statusInfo(r.status);
     return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(124,148,184,.07)">
       <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.unit}</div><div style="font-size:11px;color:#5f718e;font-family:'IBM Plex Mono',monospace">${r.date}</div></div>
       <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fbbf24;font-size:13px">${r.issues} ข้อ</div>
       <span class="status ${si.cls}" style="font-size:11px;padding:3px 9px">${si.label==='อนุมัติแล้ว'?'อนุมัติ':'รอตรวจ'}</span>
-    </div>`;}).join('');
+    </div>`;}).join('') || '<div style="padding:18px 0;text-align:center;color:#5f718e;font-size:12.5px">ยังไม่มีรายงาน</div>';
   return `<div style="font-size:15px;font-weight:600">รายงานล่าสุด</div>
     <div style="font-size:11.5px;color:#5f718e;margin-bottom:12px;font-family:'IBM Plex Mono',monospace">RECENT REPORTS</div>
     <div>${rows}</div>`;
@@ -852,13 +894,15 @@ function kpiCardHTML(v,unit,label,en,color,iconD,trend,up){
 
 function renderDashboard(){
   computeAspectCounts();
-  // KPIs computed from real data
-  const units=[...new Set(S.reports.map(r=>r.unit))].length;
-  const totalIssues=S.reports.reduce((s,r)=>s+(r.issues||0),0);
-  const pending=S.reports.filter(r=>r.status==='pending').length;
+  // KPIs — prefer org-wide stats (visible to all roles); fall back to local rows
+  const st=S.dashStats;
+  const units       = st ? st.units         : [...new Set(S.reports.map(r=>r.unit))].length;
+  const totalReports= st ? st.total_reports : S.reports.length;
+  const totalIssues = st ? st.total_issues  : S.reports.reduce((s,r)=>s+(r.issues||0),0);
+  const pending     = st ? st.pending       : S.reports.filter(r=>r.status==='pending').length;
   $('kpi-row').innerHTML = [
     {v:String(units),unit:'หน่วย',label:'หน่วยงานที่ส่งรายงาน',en:'UNITS REPORTING',color:'#34e3a4',icon:'M3 21h18|M5 21V7l8-4v18|M19 21V11l-6-4',trend:null},
-    {v:String(S.reports.length),unit:'ครั้ง',label:'รายงานทั้งหมด',en:'TOTAL REPORTS',color:'#5b9bf5',icon:'M12 2v4|M12 18v4|M2 12h4|M18 12h4|M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',trend:null},
+    {v:String(totalReports),unit:'ครั้ง',label:'รายงานทั้งหมด',en:'TOTAL REPORTS',color:'#5b9bf5',icon:'M12 2v4|M12 18v4|M2 12h4|M18 12h4|M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',trend:null},
     {v:String(totalIssues),unit:'ข้อ',label:'ปัญหาที่พบรวม',en:'TOTAL ISSUES',color:'#fbbf24',icon:'M12 9v4|M12 17h.01|M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',trend:null},
     {v:String(pending),unit:'รายการ',label:'รอการตรวจสอบ',en:'PENDING REVIEW',color:'#a78bfa',icon:'M12 8v4l3 3|M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z',trend:null}
   ].map(k=>kpiCardHTML(k.v,k.unit,k.label,k.en,k.color,k.icon,k.trend,k.up)).join('');
@@ -881,6 +925,9 @@ function renderDashboard(){
       </div>
       <div style="font-size:17px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:${a.color}">${a.count}</div>
     </div>`).join('');
+
+  const ll=$('live-label');
+  if(ll){ const t=new Date(); ll.textContent='เรียลไทม์ · อัปเดต '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0'); }
 
   setVariant(S.variant);
 }
