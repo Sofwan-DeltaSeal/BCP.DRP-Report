@@ -1,0 +1,11 @@
+{
+  "name": "bcp-drp-reporting",
+  "version": "1.0.0",
+  "description": "BCP/DRP Drill Reporting System — Raman Hospital Cyber Security",
+  "private": true,
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "dev": "npx serve . -l 3000"
+  },
+  "keywords": ["bcp", "drp", "hospital", "cybersecurity", "reporting"]
+}
