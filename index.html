@@ -986,7 +986,8 @@ function rejectReport(){
 /* ═══════════════════ ADMIN: USERS ═══════════════════ */
 async function renderUsers(){
   if(sb){
-    const {data}=await sb.from('users').select('*').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('users').select('*').order('created_at',{ascending:false});
+    if(error) console.error('[renderUsers]',error);
     S.users=data||[];
   }
   $('user-count').textContent=S.users.length;
@@ -1069,7 +1070,12 @@ document.getElementById('form-login').addEventListener('submit', async e=>{
   btn.disabled=true; btn.textContent='กำลังเข้าสู่ระบบ...';
   const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
   btn.disabled=false; btn.textContent='เข้าสู่ระบบ';
-  if(error){swal({icon:'error',title:'เข้าสู่ระบบไม่สำเร็จ',text:error.message==='Invalid login credentials'?'อีเมลหรือรหัสผ่านไม่ถูกต้อง':error.message});return;}
+  if(error){
+    let msg=error.message;
+    if(msg==='Invalid login credentials') msg='อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+    else if(msg==='Email not confirmed') msg='อีเมลยังไม่ได้รับการยืนยัน กรุณาตรวจสอบกล่องจดหมายและคลิกลิงก์ยืนยัน หรือติดต่อ Admin';
+    swal({icon:'error',title:'เข้าสู่ระบบไม่สำเร็จ',text:msg});return;
+  }
   await loadUserProfile(data.user);
 });
 
@@ -1100,11 +1106,21 @@ document.getElementById('form-register').addEventListener('submit', async e=>{
   }
   const btn=e.target.querySelector('button[type=submit]');
   btn.disabled=true; btn.textContent='กำลังลงทะเบียน...';
-  const {data,error}=await sb.auth.signUp({email,password:pass});
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{name,unit,phone,profession:prof,team_role:team||''}}});
   if(error){btn.disabled=false;btn.textContent='ลงทะเบียน';swal({icon:'error',title:'ลงทะเบียนไม่สำเร็จ',text:error.message});return;}
-  if(data.user) await sb.from('users').insert({id:data.user.id,email,name,role:'reporter',unit});
+  // Trigger auto-creates profile; also insert here as fallback (session may be null if email confirm required)
+  if(data.user){
+    await sb.from('users').upsert({id:data.user.id,email,name,role:'reporter',unit,approved:false},{onConflict:'id',ignoreDuplicates:true});
+  }
   btn.disabled=false; btn.textContent='ลงทะเบียน';
-  Swal.fire({icon:'success',title:'ลงทะเบียนสำเร็จ',text:'สร้างบัญชีผู้ใช้งานเรียบร้อยแล้ว สามารถเข้าสู่ระบบได้ทันที',confirmButtonColor:'#1fb886',background:'#101b34',color:'#e8eefb'}).then(()=>goScreen('login'));
+  const needsConfirm=!data.session;
+  Swal.fire({
+    icon:'success',title:'ลงทะเบียนสำเร็จ',
+    html: needsConfirm
+      ? 'สร้างบัญชีเรียบร้อยแล้ว<br><span style="font-size:13px;color:#fbbf24">⚠️ กรุณายืนยันอีเมลของคุณก่อนเข้าสู่ระบบ<br>ตรวจสอบกล่องจดหมาย '+email+'</span>'
+      : 'สร้างบัญชีผู้ใช้งานเรียบร้อยแล้ว รอการอนุมัติจาก Admin',
+    confirmButtonColor:'#1fb886',background:'#101b34',color:'#e8eefb'
+  }).then(()=>goScreen('login'));
 });
 
 document.getElementById('form-report').addEventListener('submit',e=>{
