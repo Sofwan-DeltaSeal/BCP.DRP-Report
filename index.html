@@ -291,14 +291,6 @@ select.inp{background-color:#0a1428}
         </div>
         <div id="page-sub" style="font-size:12.5px;color:#7e90ad;margin-top:2px">ภาพรวมสถิติการซ้อมแผน BCP / DRP</div>
       </div>
-      <div id="role-switcher" style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:11.5px;color:#5f718e" class="mono">VIEW AS</span>
-        <div style="display:flex;background:#0e1830;border:1px solid rgba(124,148,184,.16);border-radius:10px;padding:3px;gap:2px">
-          <button class="tab-btn" onclick="setRole('reporter')" id="rt-reporter">ผู้รายงาน</button>
-          <button class="tab-btn" onclick="setRole('lead')" id="rt-lead">หัวหน้าทีม</button>
-          <button class="tab-btn" onclick="setRole('admin')" id="rt-admin">แอดมิน</button>
-        </div>
-      </div>
       <button onclick="goView('report')" style="display:flex;align-items:center;gap:7px;padding:10px 16px;background:linear-gradient(180deg,#34e3a4,#1fb886);color:#062417;border:none;border-radius:10px;font-size:13.5px;font-weight:700;box-shadow:0 4px 14px rgba(52,227,164,.2)">+ บันทึกผลการซ้อม</button>
     </header>
 
@@ -402,13 +394,28 @@ select.inp{background-color:#0a1428}
               </div>
               <div style="grid-column:span 2">
                 <label style="display:block;font-size:13px;color:#aebbd4;margin-bottom:7px">หน่วยงาน <span style="color:#f87171">*</span></label>
-                <select id="rpt-unit" class="inp">
+                <select id="rpt-unit" class="inp" onchange="toggleOther(this,'rpt-unit-other')">
                   <option value="">— เลือกหน่วยงาน —</option>
-                  <option>ศูนย์เทคโนโลยีสารสนเทศ</option><option>ห้องฉุกเฉิน (ER)</option>
-                  <option>งานเวชระเบียน</option><option>กลุ่มงานเภสัชกรรม</option>
-                  <option>ห้องปฏิบัติการ (LAB)</option><option>งานรังสีวิทยา (X-ray)</option>
-                  <option>ผู้ป่วยนอก (OPD)</option><option>งานการเงินและบัญชี</option>
+                  <option>กายภาพบำบัด</option>
+                  <option>แพทย์แผนไทย</option>
+                  <option>เทคนิคการแพทย์</option>
+                  <option>สุขภาพจิตและยาเสพติด</option>
+                  <option>ส่งเสริมสุขภาพ</option>
+                  <option>อุบัติเหตุฉุกเฉิน</option>
+                  <option>งานเภสัชกรรม</option>
+                  <option>ผู้ป่วยในชาย</option>
+                  <option>ผู้ป่วยในหญิง</option>
+                  <option>ผู้ป่วยเด็ก</option>
+                  <option>ผู้ป่วยพิเศษ</option>
+                  <option>ผู้ป่วยนอก</option>
+                  <option>สุขาภิบาล</option>
+                  <option>งานบริหารทั่วไป</option>
+                  <option>ศูนย์เครื่องมือแพทย์</option>
+                  <option>สุขภาพดิจิทัล</option>
+                  <option>ยุทธศาสตร์</option>
+                  <option value="other">อื่นๆ (ระบุ)</option>
                 </select>
+                <input id="rpt-unit-other" class="inp hidden" style="margin-top:8px" placeholder="ระบุหน่วยงาน...">
               </div>
             </div>
           </div>
@@ -720,26 +727,6 @@ function enterApp(){
   $('user-name').textContent = n;
   $('user-avatar').textContent = n.replace(/^[^ ]*\./,'').trim().charAt(0)||'R';
   $('user-role-label').textContent = roleLabelText();
-  ['rt-reporter','rt-lead','rt-admin'].forEach(id=>$(id)?.classList.remove('active'));
-  $('rt-'+S.role)?.classList.add('active');
-  renderSidebar();
-  goView('dashboard');
-}
-
-function quickLogin(role){
-  S.role = role;
-  S.currentUser = null;
-  enterApp();
-  toast('เข้าสู่ระบบในมุมมอง '+{reporter:'ผู้รายงาน',lead:'หัวหน้าทีม',admin:'แอดมิน'}[role]);
-}
-
-function setRole(role){
-  S.role = role;
-  $('user-name').textContent = currentUserName();
-  $('user-role-label').textContent = roleLabelText();
-  $('user-avatar').textContent = currentUserName().replace(/^[^ ]*\./,'').trim().charAt(0)||'R';
-  ['rt-reporter','rt-lead','rt-admin'].forEach(id=>$(id)?.classList.remove('active'));
-  $('rt-'+role)?.classList.add('active');
   renderSidebar();
   goView('dashboard');
 }
@@ -912,6 +899,7 @@ function setVariant(v){
 let pidCount=2;
 function renderReportForm(){
   pidCount=2;
+  $('rpt-unit-other')?.classList.add('hidden');
   $('participants-list').innerHTML='';
   addParticipant();addParticipant();
   $('aspects-form').innerHTML=ASPECTS.map(a=>`
@@ -950,8 +938,8 @@ function saveDraft(){toast('บันทึกร่างแล้ว','info');
 
 /* ═══════════════════ REPORTS LIST ═══════════════════ */
 function renderReports(list){
+  // Reporters only ever receive their own rows from the DB (RLS); admin/lead see all.
   let reports=list||S.reports;
-  if(S.role==='reporter' && S.currentUser?.name) reports=reports.filter(r=>r.reporter===S.currentUser.name);
   $('reports-tbody').innerHTML=reports.map((r,i)=>{
     const si=statusInfo(r.status);
     return `<div style="display:grid;grid-template-columns:130px 1.4fr 1.3fr 90px 130px 110px;gap:12px;padding:15px 20px;border-bottom:1px solid rgba(124,148,184,.07);align-items:center;font-size:13.5px" onmouseenter="this.style.background='rgba(124,148,184,.04)'" onmouseleave="this.style.background=''">
@@ -962,6 +950,7 @@ function renderReports(list){
       <div><span class="status ${si.cls}">${si.label}</span></div>
       <div style="display:flex;gap:6px">
         <button onclick="viewReport(${S.reports.indexOf(r)})" style="padding:6px 12px;background:rgba(91,155,245,.12);border:1px solid rgba(91,155,245,.28);border-radius:8px;color:#7fb0ff;font-size:12px;font-weight:500">ดู</button>
+        ${S.role==='admin'&&r.id?`<button onclick="deleteReport('${r.id}')" style="padding:6px 12px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.28);border-radius:8px;color:#f87171;font-size:12px;font-weight:500">ลบ</button>`:''}
       </div>
     </div>`;}).join('');
 }
@@ -1011,6 +1000,11 @@ function renderDetail(){
       <button onclick="rejectReport()" style="padding:11px 20px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:10px;color:#f87171;font-size:13.5px;font-weight:600">ส่งกลับแก้ไข</button>
       <button onclick="approveReport()" class="btn-primary" style="padding:11px 22px;font-size:13.5px">✓ อนุมัติรายงาน</button>
     </div>`:'';
+  const adminBar=(S.role==='admin'&&r.id)?`
+    <div style="display:flex;gap:12px;align-items:center;background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.2);border-radius:16px;padding:16px 22px;margin-top:14px">
+      <div style="flex:1;font-size:13px;color:#93a4c4">เครื่องมือ <b style="color:#f8a1a1">ผู้ดูแลระบบ</b> — ลบรายงานที่ไม่ถูกต้องออกจากระบบถาวร</div>
+      <button onclick="deleteReport('${r.id}')" style="padding:11px 20px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);border-radius:10px;color:#f87171;font-size:13.5px;font-weight:600">🗑 ลบรายงานนี้</button>
+    </div>`:'';
 
   $('detail-content').innerHTML=`
     <div class="card" style="margin-bottom:18px">
@@ -1036,7 +1030,7 @@ function renderDetail(){
       <div style="font-size:12px;font-weight:600;color:#34e3a4;letter-spacing:.5px;margin-bottom:18px" class="mono">สรุปปัญหาและข้อเสนอแนะ · FINDINGS</div>
       <div style="display:flex;flex-direction:column;gap:20px">${findings}</div>
     </div>
-    ${approveBar}`;
+    ${approveBar}${adminBar}`;
 }
 
 async function approveReport(){
@@ -1065,6 +1059,18 @@ function rejectReport(){
     renderDetail();toast('ส่งกลับให้ผู้รายงานแก้ไขแล้ว','info');
   }});
 }
+async function deleteReport(id){
+  if(S.role!=='admin'){toast('เฉพาะแอดมินเท่านั้น','warning');return;}
+  const res=await Swal.fire({icon:'warning',title:'ลบรายงานนี้?',text:'การลบไม่สามารถย้อนกลับได้',showCancelButton:true,confirmButtonText:'ลบรายงาน',cancelButtonText:'ยกเลิก',confirmButtonColor:'#f87171',background:'#101b34',color:'#e8eefb'});
+  if(!res.isConfirmed) return;
+  if(sb){
+    const {error}=await sb.from('reports').delete().eq('id',id);
+    if(error){swal({icon:'error',title:'ลบไม่สำเร็จ',text:error.message});return;}
+  }
+  await loadReports();
+  if(S.currentView==='detail') goView('reports'); else renderReports();
+  toast('ลบรายงานเรียบร้อย');
+}
 
 /* ═══════════════════ ADMIN: USERS ═══════════════════ */
 async function renderUsers(){
@@ -1087,9 +1093,10 @@ async function renderUsers(){
       <div style="color:#aebbd4;font-size:12.5px">${u.unit||'—'}</div>
       <div><span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:${rb};color:${rc}">${roleLabel[u.role]||u.role}</span></div>
       <div><span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:${u.approved?'rgba(52,227,164,.13)':'rgba(251,191,36,.13)'};color:${u.approved?'#34e3a4':'#fbbf24'}">${u.approved?'อนุมัติแล้ว':'รอการอนุมัติ'}</span></div>
-      <div style="display:flex;gap:6px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
         ${isPending?`<button onclick="approveUser('${u.id}')" style="padding:5px 10px;background:rgba(52,227,164,.12);border:1px solid rgba(52,227,164,.3);border-radius:7px;color:#34e3a4;font-size:12px;font-weight:600">✓ อนุมัติ</button>`:''}
         <button onclick="changeRole('${u.id}','${u.role}')" style="padding:5px 10px;background:rgba(91,155,245,.10);border:1px solid rgba(91,155,245,.25);border-radius:7px;color:#7fb0ff;font-size:12px">สิทธิ์</button>
+        ${(S.role==='admin'&&u.id!==S.currentUser?.id)?`<button onclick="deleteUser('${u.id}')" style="padding:5px 10px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.28);border-radius:7px;color:#f87171;font-size:12px">ลบ</button>`:''}
       </div>
     </div>`;}).join('') || '<div style="padding:40px;text-align:center;color:#5f718e">ยังไม่มีผู้ใช้งานในระบบ</div>';
 }
@@ -1099,6 +1106,19 @@ async function approveUser(id){
   const {error}=await sb.from('users').update({approved:true}).eq('id',id);
   if(error){swal({icon:'error',title:'เกิดข้อผิดพลาด',text:error.message});return;}
   toast('อนุมัติผู้ใช้งานเรียบร้อย');
+  renderUsers();
+}
+
+async function deleteUser(id){
+  if(S.role!=='admin'){toast('เฉพาะแอดมินเท่านั้น','warning');return;}
+  if(id===S.currentUser?.id){toast('ไม่สามารถลบบัญชีตัวเองได้','warning');return;}
+  const u=S.users.find(x=>x.id===id);
+  const res=await Swal.fire({icon:'warning',title:'ลบผู้ใช้งาน?',html:`ต้องการลบ <b style="color:#cfe0ff">${u?.name||u?.email||'ผู้ใช้นี้'}</b> ออกจากระบบ?<br><span style="font-size:12px;color:#93a4c4">ผู้ใช้จะหมดสิทธิ์เข้าถึงระบบทันที</span>`,showCancelButton:true,confirmButtonText:'ลบผู้ใช้งาน',cancelButtonText:'ยกเลิก',confirmButtonColor:'#f87171',background:'#101b34',color:'#e8eefb'});
+  if(!res.isConfirmed) return;
+  if(!sb){toast('ต้องการ Supabase','warning');return;}
+  const {error}=await sb.from('users').delete().eq('id',id);
+  if(error){swal({icon:'error',title:'ลบไม่สำเร็จ',text:error.message});return;}
+  toast('ลบผู้ใช้งานเรียบร้อย');
   renderUsers();
 }
 
@@ -1208,7 +1228,7 @@ document.getElementById('form-register').addEventListener('submit', async e=>{
 
 document.getElementById('form-report').addEventListener('submit',async e=>{
   e.preventDefault();const f=e.target;
-  const date=$('rpt-date').value,unit=$('rpt-unit').value;
+  const date=$('rpt-date').value,unit=resolveOther($('rpt-unit'),'rpt-unit-other');
   if(!date||!unit){swal({icon:'warning',title:'ข้อมูลไม่ครบ',text:'กรุณาระบุวันที่ซ้อมและหน่วยงาน'});return;}
   const pNames=f.querySelectorAll('[name=p_name]'),pPos=f.querySelectorAll('[name=p_pos]'),pDuty=f.querySelectorAll('[name=p_duty]');
   const participants=[];
